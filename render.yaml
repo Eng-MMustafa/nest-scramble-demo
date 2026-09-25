@@ -1,0 +1,16 @@
+# Render Blueprint — deploys the nest-scramble live demo on the free tier.
+# Dashboard → New → Blueprint → pick this repo → Apply.
+services:
+  - type: web
+    name: nest-scramble-demo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/docs-json
+    envVars:
+      - key: PORT
+        value: "3000"
+      # Set to the public URL Render assigns (e.g. https://nest-scramble-demo.onrender.com)
+      # so "Try it" requests target the deployed API instead of localhost.
+      - key: PUBLIC_URL
+        sync: false

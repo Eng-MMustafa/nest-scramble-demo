@@ -1,0 +1,90 @@
+{
+  "name": "Products flow",
+  "baseUrl": "http://localhost:3000",
+  "steps": [
+    {
+      "name": "Create a new product. Requires authentication.",
+      "request": {
+        "method": "POST",
+        "path": "/api/products",
+        "body": {
+          "name": "John Doe",
+          "price": 99.99,
+          "status": "draft",
+          "category": {
+            "name": "John Doe",
+            "description": "Sample description text",
+            "id": 1,
+            "createdAt": "2024-01-01T00:00:00.000Z"
+          }
+        }
+      },
+      "expect": {
+        "status": 201,
+        "matchesSpec": true
+      },
+      "capture": {
+        "productsId": "$.id"
+      }
+    },
+    {
+      "name": "Upload a product image.",
+      "request": {
+        "method": "POST",
+        "path": "/api/products/upload"
+      },
+      "expect": {
+        "status": 201,
+        "matchesSpec": true
+      }
+    },
+    {
+      "name": "List products, optionally filtered by status.",
+      "request": {
+        "method": "GET",
+        "path": "/api/products"
+      },
+      "expect": {
+        "status": 200,
+        "matchesSpec": true
+      }
+    },
+    {
+      "name": "Get a single product by ID.",
+      "request": {
+        "method": "GET",
+        "path": "/api/products/{{productsId}}"
+      },
+      "expect": {
+        "status": 200,
+        "matchesSpec": true
+      }
+    },
+    {
+      "name": "Update a product. Requires authentication.",
+      "request": {
+        "method": "PUT",
+        "path": "/api/products/{{productsId}}",
+        "body": {
+          "name": "John Doe",
+          "price": 99.99
+        }
+      },
+      "expect": {
+        "status": 200,
+        "matchesSpec": true
+      }
+    },
+    {
+      "name": "Delete a product. Requires authentication.",
+      "request": {
+        "method": "DELETE",
+        "path": "/api/products/{{productsId}}"
+      },
+      "expect": {
+        "status": 200,
+        "matchesSpec": true
+      }
+    }
+  ]
+}

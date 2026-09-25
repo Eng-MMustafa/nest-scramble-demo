@@ -1,0 +1,34 @@
+{
+  "name": "nest-scramble-test-project",
+  "version": "1.0.0",
+  "description": "Simple NestJS project to test nest-scramble",
+  "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/main.ts",
+    "start:dev": "ts-node-dev --respawn src/main.ts"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.13.0",
+    "@nestjs/apollo": "^12.2.2",
+    "@nestjs/common": "^10.4.22",
+    "@nestjs/core": "^10.4.22",
+    "@nestjs/graphql": "^12.2.2",
+    "@nestjs/platform-express": "^10.4.22",
+    "@nestjs/platform-socket.io": "^10.4.22",
+    "@nestjs/websockets": "^10.4.22",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "graphql": "^16.14.2",
+    "nest-scramble": "file:../backend-nestjs/nest-scramble",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@types/multer": "^2.2.0",
+    "@types/node": "^20.10.0",
+    "playwright": "^1.63.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.0"
+  }
+}
