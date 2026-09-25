@@ -1,0 +1,38 @@
+{
+  "generator": "nest-scramble",
+  "info": {
+    "title": "Nest-Scramble Live Demo",
+    "version": "1.0.0"
+  },
+  "gateways": [
+    {
+      "name": "OrdersGateway",
+      "namespace": "/orders",
+      "events": [
+        {
+          "event": "subscribeOrder",
+          "summary": "Subscribe to order status updates for a given order ID.",
+          "payload": {
+            "type": "string"
+          },
+          "response": {
+            "type": "object",
+            "title": "{ status: string; orderId: string; }",
+            "properties": {
+              "status": {
+                "type": "string"
+              },
+              "orderId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "status",
+              "orderId"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

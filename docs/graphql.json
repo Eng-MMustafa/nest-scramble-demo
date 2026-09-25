@@ -1,0 +1,115 @@
+{
+  "generator": "nest-scramble",
+  "info": {
+    "title": "Nest-Scramble Live Demo",
+    "version": "1.0.0"
+  },
+  "resolvers": [
+    {
+      "name": "PostsResolver",
+      "typeName": "Post",
+      "operations": [
+        {
+          "kind": "query",
+          "name": "posts",
+          "summary": "List all posts.",
+          "args": [],
+          "response": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "title": "Post",
+              "properties": {
+                "id": {
+                  "type": "number"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "published": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "published"
+              ]
+            }
+          },
+          "sample": "query {\n  posts {\n    id\n    title\n    published\n  }\n}"
+        },
+        {
+          "kind": "query",
+          "name": "post",
+          "summary": "Get a single post by ID.",
+          "args": [
+            {
+              "name": "id",
+              "required": true,
+              "schema": {
+                "type": "number"
+              }
+            }
+          ],
+          "response": {
+            "type": "object",
+            "title": "Post",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "title": {
+                "type": "string"
+              },
+              "published": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "published"
+            ]
+          },
+          "sample": "query {\n  post(id: 1) {\n    id\n    title\n    published\n  }\n}"
+        },
+        {
+          "kind": "mutation",
+          "name": "togglePublished",
+          "summary": "Toggle the published flag of a post.",
+          "args": [
+            {
+              "name": "id",
+              "required": true,
+              "schema": {
+                "type": "number"
+              }
+            }
+          ],
+          "response": {
+            "type": "object",
+            "title": "Post",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "title": {
+                "type": "string"
+              },
+              "published": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "published"
+            ]
+          },
+          "sample": "mutation {\n  togglePublished(id: 1) {\n    id\n    title\n    published\n  }\n}"
+        }
+      ]
+    }
+  ]
+}

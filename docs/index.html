@@ -1,0 +1,3071 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <title>Nest-Scramble Live Demo — API Documentation</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --accent: #00f2ff;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 22px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+      --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    [data-theme='light'] {
+      --bg: #fafbfc; --bg-2: #ffffff; --bg-3: #f3f5f8; --bg-4: #e8ecf1;
+      --fg: #111827; --fg-2: rgba(17, 24, 39, 0.72); --fg-3: rgba(17, 24, 39, 0.48);
+      --border: rgba(17, 24, 39, 0.1); --border-strong: rgba(17, 24, 39, 0.16);
+      --shadow: rgba(17, 24, 39, 0.06);
+      --glass: rgba(255, 255, 255, 0.86);
+      --card-gradient: linear-gradient(145deg, #ffffff, #f8fafc);
+      --hero-glow: color-mix(in srgb, #00f2ff 18%, transparent);
+    }
+    /* A bright accent (the cyan default) is unreadable on white. Light mode
+       darkens it; dark mode keeps the vivid original. */
+    @supports (color: color-mix(in srgb, red, blue)) {
+      [data-theme='light'] { --accent: color-mix(in srgb, #00f2ff 62%, #0f3d4d); }
+    }
+    [data-theme='light'] .j-str { color: #1a7f37; }
+    [data-theme='light'] .j-num { color: #9a6700; }
+    [data-theme='light'] .j-bool { color: #8250df; }
+    [data-theme='light'] .chip-ok, [data-theme='light'] .status-ok { background: #1a7f3715; color: #1a7f37; }
+    [data-theme='light'] .chip-err, [data-theme='light'] .status-err { background: #d1242f12; color: #d1242f; }
+    [data-theme='light'] .method-sm.method-get { color: #0550ae; }
+    [data-theme='light'] .method-sm.method-post { color: #1a7f37; }
+    [data-theme='light'] .method-sm.method-put { color: #9a6700; }
+    [data-theme='light'] .method-sm.method-patch { color: #6639ba; }
+    [data-theme='light'] .method-sm.method-delete { color: #d1242f; }
+    [data-theme='light'] .method-sm.method-options, [data-theme='light'] .method-sm.method-head { color: #57606a; }
+    [data-theme='light'] .method-sm.method-gql { color: #bf2e8f; }
+    [data-theme='light'] .method-sm.method-ws { color: #7c5cd6; }
+    [data-theme='dark'] {
+      --bg: #0b0d12; --bg-2: #13161d; --bg-3: #1c202a; --bg-4: #252a36;
+      --fg: rgba(244, 247, 252, 0.96); --fg-2: rgba(214, 224, 238, 0.74); --fg-3: rgba(176, 190, 211, 0.48);
+      --border: rgba(214, 226, 242, 0.09); --border-strong: rgba(214, 226, 242, 0.14);
+      --shadow: rgba(0, 0, 0, 0.35);
+      --glass: rgba(11, 13, 18, 0.84);
+      --card-gradient: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+      --hero-glow: color-mix(in srgb, #00f2ff 22%, transparent);
+    }
+    @supports (color: color-mix(in srgb, red, blue)) {
+      :root { --ring: color-mix(in srgb, var(--accent) 24%, transparent); --accent-tint: color-mix(in srgb, var(--accent) 12%, transparent); --accent-soft: color-mix(in srgb, var(--accent) 8%, transparent); }
+    }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; background: var(--bg); color: var(--fg);
+      font-family: var(--font); font-size: 14px; line-height: 1.55;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+      letter-spacing: -0.12px;
+    }
+    .mono, code, pre { font-family: var(--mono); }
+    .dim { color: var(--fg-2); }
+    h4 { margin: 20px 0 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--fg-3); font-weight: 700; }
+
+    /* ---- Polish: selection, scrollbars, motion, focus ---- */
+    ::selection { background: color-mix(in srgb, var(--accent) 38%, transparent); color: var(--fg); }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--fg-3); }
+    button { transition: color var(--transition), background var(--transition), border-color var(--transition), transform 0.12s, box-shadow var(--transition); }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius-sm); }
+    .panel, .resp-panel, .welcome-inner, #ws-view, #gql-view { animation: rise 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 0 0 var(--ring); } 50% { box-shadow: 0 0 18px 4px var(--ring); } }
+    .btn-send:active { transform: scale(0.97); }
+    .btn-send.loading { opacity: 0.85; pointer-events: none; }
+    .btn-send.loading::after {
+      content: ''; display: inline-block; width: 11px; height: 11px; margin-left: 8px;
+      border: 2px solid rgba(255, 255, 255, 0.45); border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.7s linear infinite; vertical-align: -1px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .j-key { color: var(--accent); }
+    .j-str { color: #3fb950; }
+    .j-num { color: #d29922; }
+    .j-bool { color: #a371f7; }
+    .chip-ok { background: color-mix(in srgb, #3fb950 14%, transparent); color: #3fb950; border: 1px solid color-mix(in srgb, #3fb950 22%, transparent); }
+    .chip-err { background: color-mix(in srgb, #f85149 14%, transparent); color: #f85149; border: 1px solid color-mix(in srgb, #f85149 22%, transparent); }
+    .raw-lang {
+      padding: 4px 10px; border-radius: var(--radius-md); border: 1px solid var(--border);
+      background: var(--bg-2); color: var(--accent); font-family: var(--mono); font-size: 11.5px;
+      font-weight: 700; outline: none; cursor: pointer; transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .raw-lang:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+
+    /* ---- Top bar ---- */
+    .topbar {
+      position: sticky; top: 0; z-index: 10; height: 56px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 0 20px; background: var(--glass); border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(14px) saturate(1.6); -webkit-backdrop-filter: blur(14px) saturate(1.6);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; cursor: pointer; padding: 4px 0; }
+    .brand-dot {
+      width: 9px; height: 9px; border-radius: 50%; background: var(--accent); flex: none;
+      box-shadow: 0 0 10px 1px color-mix(in srgb, var(--accent) 55%, transparent);
+      animation: pulse-dot 3s ease-in-out infinite;
+    }
+    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .brand-title { font-weight: 800; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.2px; }
+    .topbar-actions { display: flex; align-items: center; gap: 8px; }
+    .search {
+      width: 220px; padding: 8px 14px; border-radius: var(--radius-md);
+      border: 1px solid var(--border); background: var(--bg-2); color: var(--fg);
+      font-size: 13px; outline: none; transition: width var(--transition), border-color var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+    .search:hover { background: var(--bg); border-color: var(--border-strong); }
+    .search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); width: 280px; background: var(--bg-2); }
+    .search::placeholder { color: var(--fg-3); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 13px; border-radius: var(--radius-md); border: 1px solid var(--border);
+      background: transparent; color: var(--fg-2); font-size: 13px; font-weight: 500;
+      cursor: pointer; text-decoration: none; white-space: nowrap;
+      font-family: var(--font); transition: color var(--transition), border-color var(--transition), background var(--transition), transform 0.12s, box-shadow var(--transition);
+    }
+    .btn-ghost svg { flex: none; }
+    .btn-ghost:hover { color: var(--fg); border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 12px -2px var(--ring); }
+    .btn-ghost:active { transform: translateY(1px); }
+    [data-theme='dark'] .icon-sun { display: none; }
+    [data-theme='light'] .icon-moon { display: none; }
+    .btn-ghost.auth-on { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 16px);
+      background: var(--bg-2); color: var(--fg-1); border: 1px solid var(--accent);
+      box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.45), 0 0 0 3px var(--ring);
+      border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 600;
+      opacity: 0; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000; pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    /* ---- Auth popover ---- */
+    .auth-pop {
+      position: absolute; top: 62px; right: 18px; z-index: 20; width: 340px;
+      background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg); padding: 16px 18px; animation: rise 0.18s ease;
+    }
+    .auth-title { font-weight: 700; font-size: 13px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .auth-title .dim { font-weight: 400; font-size: 11.5px; }
+    .auth-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; font-size: 12px; color: var(--fg-2); }
+    .auth-field input, .auth-field select {
+      padding: 8px 11px; border-radius: var(--radius-md); border: 1px solid var(--border);
+      background: var(--bg); color: var(--fg); font-family: var(--mono); font-size: 12.5px; outline: none; transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .auth-field input:focus, .auth-field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+    .auth-note { font-size: 11px; color: var(--fg-3); margin-top: 4px; }
+
+    /* ---- WebSocket console ---- */
+    .method-ws { background: linear-gradient(135deg, #a371f7, #7c3aed); box-shadow: 0 2px 8px -2px rgba(124, 58, 237, 0.35); }
+    .method-sm.method-ws { color: #a371f7; }
+    .ws-compose { display: flex; gap: 10px; margin: 18px 0 12px; }
+    .ws-event-input {
+      flex: none; width: 280px; padding: 10px 14px; border-radius: var(--radius-md);
+      border: 1px solid var(--border); background: var(--bg-2); color: var(--fg);
+      font-family: var(--mono); font-size: 13px; outline: none; transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .ws-event-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+    .ws-doc { margin-top: 10px; }
+    .ws-log-row { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+    .ws-log-row:first-child { animation: rise 0.2s ease; }
+    .ws-dir { font-size: 11px; margin-right: 10px; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; }
+    .ws-dir-in { color: #fff; background: #3fb950; }
+    .ws-dir-out { color: #fff; background: var(--accent); }
+    .ws-dir-sys { color: var(--fg-3); background: var(--bg-3); }
+    .ws-log-name { font-family: var(--mono); font-size: 12.5px; font-weight: 700; }
+    .ws-log-time { float: right; font-size: 11px; color: var(--fg-3); }
+    .ws-log-data { margin: 8px 0 0; font-size: 12px; }
+    #ws-connect.connected { background: #3fb950; }
+
+    /* ---- GraphQL console ---- */
+    .method-gql { background: linear-gradient(135deg, #e535ab, #be185d); box-shadow: 0 2px 8px -2px rgba(229, 53, 171, 0.35); }
+    .method-sm.method-gql { color: #e535ab; }
+    #gql-kind { width: auto; min-width: 68px; padding: 6px 14px; }
+    .gql-label { margin: 18px 0 8px; font-size: 12px; color: var(--fg-2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; }
+    .gql-label .dim { font-weight: 400; font-size: 11px; text-transform: none; letter-spacing: 0; }
+    .gql-editor { font-size: 13px; }
+    /* Standalone editors (WS payload, GraphQL query/variables) have no
+       syntax-highlight overlay behind them, so the text must be opaque. */
+    .body-editor.plain-editor { color: var(--fg); background: var(--bg-2); border-radius: var(--radius-md); }
+    .body-editor.plain-editor::selection { background: color-mix(in srgb, var(--accent) 35%, transparent); color: var(--fg); }
+    .body-editor.plain-editor:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+    .req-star { color: #f85149; }
+
+    /* ---- Environments ---- */
+    .env-select {
+      padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border);
+      background: var(--bg-2); color: var(--fg-2); font-size: 12.5px; font-family: var(--font);
+      outline: none; cursor: pointer; max-width: 180px; transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .env-select:hover { border-color: var(--border-strong); }
+    .env-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+    .env-pop { width: 380px; }
+    .env-pop textarea {
+      padding: 10px 12px; border-radius: var(--radius-md); border: 1px solid var(--border);
+      background: var(--bg); color: var(--fg); font-family: var(--mono); font-size: 12.5px;
+      outline: none; resize: vertical; transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .env-pop textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+    .env-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; max-height: 150px; overflow-y: auto; }
+    .env-item {
+      text-align: left; padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border);
+      background: var(--bg); color: var(--fg); font-family: var(--mono); font-size: 12px; cursor: pointer;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: border-color var(--transition), background var(--transition);
+    }
+    .env-item:hover { border-color: var(--accent); background: var(--accent-soft); }
+    .env-item.active { border-color: var(--accent); background: var(--accent-tint); }
+    .env-empty { font-size: 12px; margin-bottom: 8px; }
+    .env-actions { display: flex; gap: 8px; margin-bottom: 8px; }
+    .env-delete { color: #f85149; }
+    .env-delete:hover { background: #f8514915; }
+    .btn-share { flex: none; padding: 9px 12px; font-size: 14px; }
+
+    /* ---- Layout ---- */
+    .layout { display: flex; height: calc(100vh - 56px); }
+    .workspace { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 18px 28px 48px; }
+
+    /* ---- Sidebar: Overview link + Collections | History ---- */
+    .sidebar {
+      width: 300px; flex: none; display: flex; flex-direction: column;
+      border-right: 1px solid var(--border); background: var(--bg-2);
+    }
+    .overview-link {
+      display: flex; align-items: center; gap: 10px; margin: 12px 12px 0;
+      padding: 10px 12px; border: none; border-radius: var(--radius-md); background: none;
+      color: var(--fg-2); font-family: var(--font); font-size: 13px; font-weight: 700;
+      cursor: pointer; text-align: left; transition: background var(--transition), color var(--transition);
+    }
+    .overview-link:hover { background: var(--bg-3); color: var(--fg); }
+    .overview-link.active { background: var(--accent-tint, var(--bg-3)); color: var(--fg); box-shadow: inset 3px 0 0 var(--accent); }
+    .ov-icon { flex: none; }
+    .side-tabs { display: flex; gap: 4px; padding: 12px 12px 0; border-bottom: 1px solid var(--border); }
+    .side-tab {
+      flex: 1; padding: 9px 8px; border: none; background: none; cursor: pointer;
+      color: var(--fg-2); font-family: var(--font); font-size: 12.5px; font-weight: 700;
+      border-bottom: 2px solid transparent; margin-bottom: -1px; border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      transition: color var(--transition), background var(--transition), border-color var(--transition);
+    }
+    .side-tab:hover { color: var(--fg); background: var(--accent-soft); }
+    .side-tab.active { color: var(--fg); border-bottom-color: var(--accent); background: var(--accent-soft); }
+    .side-panel { flex: 1; overflow-y: auto; padding: 12px 10px; }
+    .group { margin-bottom: 4px; }
+    .group-head {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      padding: 10px 12px; border: none; border-radius: var(--radius-md); background: none;
+      color: var(--fg); font-family: var(--font); font-size: 13px; font-weight: 700;
+      cursor: pointer; text-align: left; transition: background var(--transition), color var(--transition);
+    }
+    .group-head:hover { background: var(--bg-3); }
+    .chev { color: var(--fg-3); font-size: 11px; transition: transform 0.18s; }
+    .group.open .chev { transform: rotate(90deg); }
+    .group-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .group-count {
+      font-size: 11px; font-weight: 700; color: var(--fg-2);
+      background: var(--bg-3); padding: 2px 10px; border-radius: 20px;
+    }
+    .group-items { display: none; padding-left: 12px; }
+    .group.open .group-items { display: block; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      padding: 8px 10px; border: none; border-radius: var(--radius-md); background: none;
+      color: var(--fg-2); font-family: var(--font); cursor: pointer; text-align: left;
+      margin-bottom: 2px; transition: background var(--transition), color var(--transition), transform 0.12s;
+    }
+    .nav-item:hover { background: var(--bg-3); color: var(--fg); transform: translateX(2px); }
+    .nav-item.active { background: var(--accent-tint, var(--bg-3)); color: var(--fg); box-shadow: inset 3px 0 0 var(--accent); }
+    .nav-item, .group-head, .overview-link { transition: background var(--transition), color var(--transition); }
+    .nav-text { min-width: 0; display: flex; flex-direction: column; }
+    .nav-name { font-size: 12.5px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .nav-path { font-family: var(--mono); font-size: 10.5px; color: var(--fg-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hist-status { font-weight: 700; }
+    .hist-ok { color: #3fb950; }
+    .hist-err { color: #f85149; }
+    .hist-other { color: #d29922; }
+    .history-clear { margin: 0 0 10px; width: 100%; }
+
+    /* ---- Method badges ---- */
+    .method {
+      flex: none; width: 62px; text-align: center; padding: 5px 0;
+      border-radius: 6px; font-size: 11px; font-weight: 800; letter-spacing: 0.4px;
+      font-family: var(--mono); color: #fff;
+    }
+    .method-sm { width: 38px; padding: 2px 0; font-size: 9.5px; background: none !important; }
+    .method-get { background: #2f81f7; } .method-sm.method-get { color: #2f81f7; }
+    .method-post { background: #3fb950; } .method-sm.method-post { color: #3fb950; }
+    .method-put { background: #d29922; } .method-sm.method-put { color: #d29922; }
+    .method-patch { background: #a371f7; } .method-sm.method-patch { color: #a371f7; }
+    .method-delete { background: #f85149; } .method-sm.method-delete { color: #f85149; }
+    .method-options, .method-head { background: #768390; }
+    .method-sm.method-options, .method-sm.method-head { color: #768390; }
+
+    /* ---- Overview page ---- */
+    .welcome { flex: 1; display: flex; align-items: center; justify-content: center; }
+    .welcome-inner { max-width: 720px; text-align: center; padding: 24px; }
+    .ov-badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 16px; border-radius: 20px;
+      background: var(--accent-soft); color: var(--accent); font-size: 11.5px; font-weight: 700;
+      margin-bottom: 18px; letter-spacing: 0.4px; border: 1px solid var(--accent-tint);
+    }
+    .welcome-inner h1 { font-size: 34px; margin: 0 0 12px; letter-spacing: -0.6px; font-weight: 800; }
+    @supports (-webkit-background-clip: text) and (color: color-mix(in srgb, red, blue)) {
+      .welcome-inner h1 {
+        background: linear-gradient(110deg, var(--fg) 25%, color-mix(in srgb, var(--accent) 65%, var(--fg)) 120%);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+    }
+    .welcome-inner p.dim { font-size: 15px; line-height: 1.6; max-width: 480px; margin: 0 auto; }
+    .ov-cards {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+      margin: 32px 0 16px;
+    }
+    .ov-card {
+      border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 14px 18px;
+      background: var(--card-gradient); display: flex; flex-direction: column; gap: 4px;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+      box-shadow: var(--shadow-sm);
+    }
+    .ov-card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--accent) 30%, var(--border)); box-shadow: var(--shadow-md); }
+    .ov-card b { font-size: 28px; color: var(--accent); font-family: var(--mono); font-weight: 700; }
+    .ov-card span { font-size: 11px; color: var(--fg-3); text-transform: uppercase; letter-spacing: 0.9px; font-weight: 700; }
+    .ov-card-wide { grid-column: 1 / -1; }
+    .ov-base { font-size: 15px !important; overflow-wrap: anywhere; color: var(--fg-2); }
+    .ov-methods { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin: 6px 0 10px; }
+    .ov-method { display: flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--fg-2); font-family: var(--mono); background: var(--bg-2); padding: 5px 10px; border-radius: 20px; border: 1px solid var(--border); }
+    .ov-hint { margin-top: 22px; font-size: 13.5px; }
+    .ov-schemas { text-align: left; margin-top: 34px; }
+    .ov-schemas-title { display: flex; align-items: center; gap: 10px; }
+    .schema-item { margin-bottom: 6px; }
+    .schema-head {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-md);
+      background: var(--bg-2); color: var(--fg); font-family: var(--mono); font-size: 12.5px;
+      font-weight: 600; cursor: pointer; text-align: left; transition: border-color var(--transition), background var(--transition);
+    }
+    .schema-head:hover { border-color: var(--accent); background: var(--accent-soft); }
+    .schema-head.open .chev { transform: rotate(90deg); }
+    .schema-body { padding: 8px 0 10px; }
+
+    /* ---- Breadcrumb ---- */
+    .crumbs { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 12.5px; }
+    .crumb-link {
+      border: none; background: none; padding: 0; cursor: pointer;
+      color: var(--fg-3); font-family: var(--font); font-size: 12.5px; font-weight: 500;
+      transition: color var(--transition);
+    }
+    .crumb-link:hover { color: var(--accent); }
+    .crumb-sep { color: var(--fg-3); }
+    .crumb { color: var(--fg-2); font-weight: 500; }
+    b.crumb { color: var(--fg); font-weight: 700; }
+
+    /* ---- Request bar (Postman-style URL bar) ---- */
+    .req-bar {
+      display: flex; align-items: stretch; gap: 0; margin-bottom: 8px;
+      border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden;
+      background: var(--bg-2); box-shadow: var(--shadow-sm);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .req-bar:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+    .req-bar .method { border-radius: 0; width: 88px; display: flex; align-items: center; justify-content: center; font-size: 11.5px; letter-spacing: 0.6px; }
+    .url-input {
+      flex: 1; border: none; outline: none; padding: 13px 16px;
+      background: transparent; color: var(--fg); font-family: var(--mono); font-size: 13.5px;
+    }
+    .url-input::placeholder { color: var(--fg-3); }
+    .btn-send {
+      border: none; padding: 0 30px; background: var(--accent); color: #fff;
+      font-weight: 800; font-size: 13.5px; letter-spacing: 0.4px; cursor: pointer;
+      font-family: var(--font); transition: filter var(--transition), box-shadow var(--transition);
+    }
+    @supports (color: color-mix(in srgb, red, blue)) {
+      .btn-send { background: linear-gradient(155deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #000)); }
+      .btn-send:hover { box-shadow: 0 0 20px -2px color-mix(in srgb, var(--accent) 55%, transparent); filter: brightness(1.08); }
+    }
+    .req-summary { display: flex; align-items: center; gap: 10px; margin: 4px 4px 14px; font-size: 12.5px; }
+    .req-hint { margin-left: auto; font-size: 11px; color: var(--fg-3); }
+
+    /* ---- Tabs ---- */
+    .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+    .tab {
+      padding: 9px 16px; border: none; background: none; cursor: pointer;
+      color: var(--fg-2); font-family: var(--font); font-size: 13px; font-weight: 600;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      display: flex; align-items: center; gap: 6px;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0; transition: color var(--transition), background var(--transition), border-color var(--transition);
+    }
+    .tab:hover { color: var(--fg); background: var(--accent-soft); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-soft); }
+    .tab-count {
+      font-size: 10px; background: var(--bg-3); color: var(--fg-2);
+      padding: 1px 7px; border-radius: 10px; font-weight: 700;
+    }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #3fb950; display: inline-block; }
+    .panel { min-height: 120px; }
+    .panel-empty { color: var(--fg-3); padding: 26px 6px; font-size: 13px; }
+    .hidden-note { font-size: 11.5px; margin-bottom: 8px; color: var(--fg-2); }
+
+    /* ---- Key/value tables (params & headers) ---- */
+    .kv-table { border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+    .kv-row {
+      display: grid; grid-template-columns: 40px 210px 1fr 1fr; align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .kv-resp .kv-row { grid-template-columns: 240px 1fr; }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-header-row { background: var(--bg-3); }
+    .kv-ghost .kv-input { color: var(--fg-3); }
+    .kv-auto { background: var(--bg-3); opacity: 0.9; }
+    .kv-check-cell { display: flex; align-items: center; justify-content: center; padding: 9px 0; }
+    .kv-check { accent-color: var(--accent); cursor: pointer; width: 15px; height: 15px; }
+    .kv-head {
+      padding: 9px 13px; font-size: 10.5px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.7px; color: var(--fg-3);
+    }
+    .kv-key { padding: 10px 13px; font-family: var(--mono); font-size: 12.5px; font-weight: 600; }
+    .kv-fixed { padding: 10px 13px; font-family: var(--mono); font-size: 12.5px; color: var(--fg-2); overflow-wrap: anywhere; }
+    .kv-input {
+      width: 100%; border: none; outline: none; padding: 10px 13px;
+      background: transparent; color: var(--fg); font-family: var(--mono); font-size: 12.5px;
+      border-left: 1px solid var(--border); transition: background var(--transition);
+    }
+    .kv-input:focus { background: var(--bg-3); }
+    .kv-desc { padding: 10px 13px; font-size: 12px; color: var(--fg-3); border-left: 1px solid var(--border); }
+    .btn-add {
+      margin-top: 10px; padding: 7px 14px; border: 1px dashed var(--border); border-radius: var(--radius-md);
+      background: none; color: var(--fg-2); font-size: 12.5px; cursor: pointer;
+      font-family: var(--font); font-weight: 600; transition: color var(--transition), border-color var(--transition), background var(--transition);
+    }
+    .btn-add:hover { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+    .req { color: #f85149; font-style: normal; margin-left: 2px; }
+
+    /* ---- Auth panel ---- */
+    .auth-grid { display: grid; grid-template-columns: repeat(3, minmax(160px, 280px)); gap: 14px; }
+    .auth-summary { margin-top: 14px; font-size: 12.5px; color: var(--fg-2); padding: 12px 14px; border-radius: var(--radius-md); background: var(--bg-3); border: 1px solid var(--border); }
+
+    /* ---- Body editor ---- */
+    .body-bar { margin-bottom: 12px; display: flex; align-items: center; gap: 14px; }
+    .body-bar .btn-add { margin-top: 0; margin-left: auto; }
+    .form-table { margin-top: 8px; }
+    .file-cell { display: flex; align-items: center; gap: 12px; min-width: 0; flex-wrap: wrap; }
+    .file-btn { margin-top: 0; flex: none; }
+    .file-names { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg-2); }
+    .file-src {
+      padding: 5px 10px; border-radius: var(--radius-md); border: 1px solid var(--border);
+      background: var(--bg-2); color: var(--fg-2); font-family: var(--font); font-size: 11.5px;
+      font-weight: 600; outline: none; cursor: pointer; flex: none; transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .file-src:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+    .file-url { flex: 1; min-width: 160px; }
+    .file-b64 { flex: 1; min-width: 160px; resize: vertical; font-family: var(--mono); font-size: 11.5px; }
+    .chip-filetag { background: var(--accent-tint); color: var(--accent); font-size: 10px; padding: 1px 8px; vertical-align: 1px; border-radius: 20px; font-weight: 700; }
+    .body-mode { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--fg-2); cursor: pointer; font-weight: 500; }
+    .body-mode input { accent-color: var(--accent); cursor: pointer; width: 15px; height: 15px; }
+    .editor-wrap { position: relative; }
+    .body-editor {
+      position: relative; z-index: 1; display: block;
+      width: 100%; padding: 14px 16px; border-radius: var(--radius-md);
+      border: 1px solid var(--border); background: transparent;
+      color: transparent; caret-color: var(--accent);
+      font-family: var(--mono); font-size: 13px; line-height: 1.65; outline: none; resize: vertical;
+      white-space: pre-wrap; overflow-wrap: break-word; min-height: 180px;
+    }
+    .body-editor::selection { background: color-mix(in srgb, var(--accent) 38%, transparent); color: transparent; }
+    .body-editor:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+    .body-highlight {
+      position: absolute; inset: 0; z-index: 0; margin: 0; padding: 14px 16px;
+      border: 1px solid transparent; border-radius: var(--radius-md);
+      background: var(--bg-2); color: var(--fg);
+      font-family: var(--mono); font-size: 13px; line-height: 1.65;
+      white-space: pre-wrap; overflow-wrap: break-word;
+      overflow: hidden; pointer-events: none;
+    }
+
+    /* ---- Code snippets tab ---- */
+    .code-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .code-bar .btn-add { margin-top: 0; }
+    .code-bar select {
+      padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border);
+      background: var(--bg-2); color: var(--fg); font-family: var(--font); font-size: 12.5px; outline: none; cursor: pointer; transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .code-bar select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--ring); }
+
+    /* ---- Docs panel ---- */
+    .schema { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; background: var(--bg-2); }
+    .prop { display: flex; flex-wrap: wrap; gap: 10px; padding: 4px 0 4px calc(var(--indent, 0) * 18px); font-size: 12.5px; align-items: baseline; }
+    .prop-name { font-family: var(--mono); font-weight: 600; }
+    .prop-type { color: var(--accent); font-family: var(--mono); font-size: 11.5px; background: var(--accent-soft); padding: 1px 7px; border-radius: 20px; }
+    .prop-constraints { color: var(--fg-3); font-size: 11.5px; }
+    .prop-desc { color: var(--fg-2); font-size: 12px; flex-basis: 100%; padding-left: 12px; }
+    .response-doc { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .response-doc:last-child { border-bottom: none; }
+    .response-doc .code { flex-basis: 100%; }
+
+    /* ---- Shared chips / status / code ---- */
+    .chip {
+      display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 20px;
+      font-size: 10.5px; font-weight: 700; background: var(--bg-3); color: var(--fg-2);
+    }
+    .chip-path { color: var(--accent); background: var(--accent-soft); }
+    .chip-deprecated { background: color-mix(in srgb, #f85149 12%, transparent); color: #f85149; text-decoration: line-through; border: 1px solid color-mix(in srgb, #f85149 20%, transparent); }
+    .chip-auth { background: color-mix(in srgb, #d29922 12%, transparent); color: #d29922; border: 1px solid color-mix(in srgb, #d29922 20%, transparent); }
+    .path-param { color: var(--accent); font-weight: 600; }
+    .status {
+      font-family: var(--mono); font-weight: 700; font-size: 12px;
+      padding: 3px 10px; border-radius: var(--radius-sm);
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; }
+    .status-ok { background: color-mix(in srgb, #3fb950 12%, transparent); color: #3fb950; }
+    .status-err { background: color-mix(in srgb, #f85149 12%, transparent); color: #f85149; }
+    .status-other { background: var(--bg-3); color: var(--fg-2); }
+    .code {
+      background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius-md);
+      padding: 14px 16px; font-size: 12.5px; overflow-x: auto; margin: 10px 0;
+      max-height: 380px; overflow-y: auto; white-space: pre-wrap; overflow-wrap: anywhere;
+    }
+
+    /* ---- Response panel ---- */
+    .resp { margin-top: 22px; border-top: 1px solid var(--border); padding-top: 14px; }
+    .resp-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .resp-tabs { display: flex; align-items: center; gap: 8px; }
+    .resp-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: var(--fg-3); margin-right: 8px; }
+    .rtab {
+      padding: 5px 12px; border: none; border-radius: var(--radius-md); background: none; cursor: pointer;
+      color: var(--fg-2); font-family: var(--font); font-size: 12px; font-weight: 600;
+      transition: color var(--transition), background var(--transition);
+    }
+    .rtab:hover { color: var(--fg); background: var(--accent-soft); }
+    .rtab.active { background: var(--bg-3); color: var(--fg); }
+    .btn-copy-resp { margin-top: 0; margin-left: 6px; padding: 4px 11px; font-size: 11.5px; }
+    .resp-meta { display: flex; align-items: center; gap: 14px; }
+    .meta-item { font-family: var(--mono); font-size: 12px; color: var(--fg-2); }
+    .resp-empty { color: var(--fg-3); padding: 24px 6px; font-size: 13px; }
+    .resp-code { max-height: 460px; }
+
+    /* ---- Hero glow ---- */
+    .welcome { position: relative; }
+    .welcome::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 30%, var(--hero-glow) 0%, transparent 60%);
+      pointer-events: none; opacity: 0.8;
+    }
+    .welcome-inner { position: relative; z-index: 1; }
+
+    @media (max-width: 900px) {
+      .sidebar { width: 240px; }
+      .kv-row { grid-template-columns: 34px 150px 1fr; }
+      .kv-desc { display: none; }
+      .search { width: 140px; }
+      .search:focus { width: 170px; }
+      .ov-cards { grid-template-columns: 1fr 1fr; }
+      .ov-card-wide { grid-column: 1 / -1; }
+      .auth-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .topbar { height: auto; flex-wrap: wrap; padding: 10px 12px; gap: 8px; }
+      .layout { flex-direction: column; height: auto; }
+      .sidebar {
+        width: 100%; max-height: 42vh; border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .workspace { padding: 14px 14px 40px; overflow-y: visible; }
+      .req-bar { flex-wrap: wrap; }
+      .url-input { min-width: 160px; }
+      .btn-send { padding: 10px 22px; }
+      .ov-cards { grid-template-columns: 1fr; }
+      .ov-card-wide { grid-column: auto; }
+      .kv-row { grid-template-columns: 32px 110px 1fr; }
+      .auth-pop, .env-pop { right: 8px; left: 8px; width: auto; }
+      .tabs { overflow-x: auto; }
+      .welcome-inner h1 { font-size: 26px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<script type="application/json" id="scramble-spec">{"openapi":"3.0.0","info":{"title":"Nest-Scramble Live Demo","version":"1.0.0","description":"Generated from NestJS controllers using nest-scramble"},"servers":[{"url":"https://nest-scramble-demo.onrender.com"}],"tags":[{"name":"Users","description":"Routes under /users"},{"name":"Products","description":"Routes under /products"},{"name":"Auth","description":"Routes under /auth"}],"paths":{"/api/users":{"get":{"operationId":"UsersController_findAll","summary":"List all users, optionally filtered by name.","tags":["Users"],"responses":{"200":{"description":"Success","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/UserResponseDto"}}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":400},"message":{"type":"string","example":"Bad Request"},"error":{"type":"string","example":"Validation failed"}}}}}},"500":{"description":"Internal Server Error","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":500},"message":{"type":"string","example":"Internal server error"}}}}}}},"parameters":[{"name":"name","in":"query","schema":{"type":"string","example":"sample string"},"required":false}],"x-code-samples":[{"lang":"curl","source":"curl -X GET \"https://nest-scramble-demo.onrender.com/api/users\""},{"lang":"javascript","source":"fetch('https://nest-scramble-demo.onrender.com/api/users')\n  .then(response => response.json())\n  .then(data => console.log(data));"}]},"post":{"operationId":"UsersController_create","summary":"Create a new user.","tags":["Users"],"responses":{"201":{"description":"Created","content":{"application/json":{"schema":{"$ref":"#/components/schemas/UserResponseDto"}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":400},"message":{"type":"string","example":"Bad Request"},"error":{"type":"string","example":"Validation failed"}}}}}},"500":{"description":"Internal Server Error","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":500},"message":{"type":"string","example":"Internal server error"}}}}}}},"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CreateUserDto"}}}},"x-code-samples":[{"lang":"curl","source":"curl -X POST \"https://nest-scramble-demo.onrender.com/api/users\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{}'"},{"lang":"javascript","source":"fetch('https://nest-scramble-demo.onrender.com/api/users', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n  },\n  body: JSON.stringify({}),\n})\n  .then(response => response.json())\n  .then(data => console.log(data));"}]}},"/api/users/{id}":{"get":{"operationId":"UsersController_findOne","summary":"Get a single user by ID.","tags":["Users"],"responses":{"200":{"description":"Success","content":{"application/json":{"schema":{"$ref":"#/components/schemas/UserResponseDto"}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":400},"message":{"type":"string","example":"Bad Request"},"error":{"type":"string","example":"Validation failed"}}}}}},"404":{"description":"Not Found","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":404},"message":{"type":"string","example":"Not Found"},"error":{"type":"string"}}}}}},"500":{"description":"Internal Server Error","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":500},"message":{"type":"string","example":"Internal server error"}}}}}}},"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"number","example":0}}],"x-code-samples":[{"lang":"curl","source":"curl -X GET \"https://nest-scramble-demo.onrender.com/api/users/{id}\""},{"lang":"javascript","source":"fetch('https://nest-scramble-demo.onrender.com/api/users/{id}')\n  .then(response => response.json())\n  .then(data => console.log(data));"}]},"put":{"operationId":"UsersController_update","summary":"Update an existing user.","tags":["Users"],"responses":{"200":{"description":"Updated","content":{"application/json":{"schema":{"$ref":"#/components/schemas/UserResponseDto"}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":400},"message":{"type":"string","example":"Bad Request"},"error":{"type":"string","example":"Validation failed"}}}}}},"500":{"description":"Internal Server Error","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":500},"message":{"type":"string","example":"Internal server error"}}}}}}},"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/UpdateUserDto"}}}},"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"number","example":0}}],"x-code-samples":[{"lang":"curl","source":"curl -X PUT \"https://nest-scramble-demo.onrender.com/api/users/{id}\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{}'"},{"lang":"javascript","source":"fetch('https://nest-scramble-demo.onrender.com/api/users/{id}', {\n  method: 'PUT',\n  headers: {\n    'Content-Type': 'application/json',\n  },\n  body: JSON.stringify({}),\n})\n  .then(response => response.json())\n  .then(data => console.log(data));"}]},"delete":{"operationId":"UsersController_remove","summary":"Delete a user.","tags":["Users"],"responses":{"200":{"description":"Deleted","content":{"application/json":{"schema":{"type":"object","properties":{"deleted":{"type":"boolean","example":true}},"required":["deleted"],"example":{"deleted":true}}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":400},"message":{"type":"string","example":"Bad Request"},"error":{"type":"string","example":"Validation failed"}}}}}},"500":{"description":"Internal Server Error","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":500},"message":{"type":"string","example":"Internal server error"}}}}}}},"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"number","example":0}}],"x-code-samples":[{"lang":"curl","source":"curl -X DELETE \"https://nest-scramble-demo.onrender.com/api/users/{id}\""},{"lang":"javascript","source":"fetch('https://nest-scramble-demo.onrender.com/api/users/{id}', { method: 'DELETE' })\n  .then(response => response.json())\n  .then(data => console.log(data));"}]}},"/api/products":{"get":{"operationId":"ProductsController_findAll","summary":"List products, optionally filtered by status.","tags":["Products"],"responses":{"200":{"description":"Success","content":{"application/json":{"schema":{"type":"array","items":{"$ref":"#/components/schemas/ProductResponseDto"}}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":400},"message":{"type":"string","example":"Bad Request"},"error":{"type":"string","example":"Validation failed"}}}}}},"500":{"description":"Internal Server Error","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":500},"message":{"type":"string","example":"Internal server error"}}}}}}},"parameters":[{"name":"status","in":"query","schema":{"type":"string","enum":["draft","active","archived"],"example":"draft"},"required":false}],"x-code-samples":[{"lang":"curl","source":"curl -X GET \"https://nest-scramble-demo.onrender.com/api/products\""},{"lang":"javascript","source":"fetch('https://nest-scramble-demo.onrender.com/api/products')\n  .then(response => response.json())\n  .then(data => console.log(data));"}]},"post":{"operationId":"ProductsController_create","summary":"Create a new product. Requires authentication.","tags":["Products"],"responses":{"201":{"description":"Created","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProductResponseDto"}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":400},"message":{"type":"string","example":"Bad Request"},"error":{"type":"string","example":"Validation failed"}}}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":401},"message":{"type":"string","example":"Unauthorized"}}}}}},"500":{"description":"Internal Server Error","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":500},"message":{"type":"string","example":"Internal server error"}}}}}}},"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/CreateProductDto"}}}},"security":[{"bearerAuth":[]}],"x-code-samples":[{"lang":"curl","source":"curl -X POST \"https://nest-scramble-demo.onrender.com/api/products\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{}'"},{"lang":"javascript","source":"fetch('https://nest-scramble-demo.onrender.com/api/products', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n  },\n  body: JSON.stringify({}),\n})\n  .then(response => response.json())\n  .then(data => console.log(data));"}]}},"/api/products/{id}":{"get":{"operationId":"ProductsController_findOne","summary":"Get a single product by ID.","tags":["Products"],"responses":{"200":{"description":"Success","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProductResponseDto"}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":400},"message":{"type":"string","example":"Bad Request"},"error":{"type":"string","example":"Validation failed"}}}}}},"500":{"description":"Internal Server Error","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":500},"message":{"type":"string","example":"Internal server error"}}}}}}},"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"number","example":0}}],"x-code-samples":[{"lang":"curl","source":"curl -X GET \"https://nest-scramble-demo.onrender.com/api/products/{id}\""},{"lang":"javascript","source":"fetch('https://nest-scramble-demo.onrender.com/api/products/{id}')\n  .then(response => response.json())\n  .then(data => console.log(data));"}]},"put":{"operationId":"ProductsController_update","summary":"Update a product. Requires authentication.","tags":["Products"],"responses":{"200":{"description":"Updated","content":{"application/json":{"schema":{"$ref":"#/components/schemas/ProductResponseDto"}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":400},"message":{"type":"string","example":"Bad Request"},"error":{"type":"string","example":"Validation failed"}}}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":401},"message":{"type":"string","example":"Unauthorized"}}}}}},"500":{"description":"Internal Server Error","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":500},"message":{"type":"string","example":"Internal server error"}}}}}}},"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/UpdateProductDto"}}}},"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"number","example":0}}],"security":[{"bearerAuth":[]}],"x-code-samples":[{"lang":"curl","source":"curl -X PUT \"https://nest-scramble-demo.onrender.com/api/products/{id}\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{}'"},{"lang":"javascript","source":"fetch('https://nest-scramble-demo.onrender.com/api/products/{id}', {\n  method: 'PUT',\n  headers: {\n    'Content-Type': 'application/json',\n  },\n  body: JSON.stringify({}),\n})\n  .then(response => response.json())\n  .then(data => console.log(data));"}]},"delete":{"operationId":"ProductsController_remove","summary":"Delete a product. Requires authentication.","tags":["Products"],"responses":{"200":{"description":"Deleted","content":{"application/json":{"schema":{"type":"object","properties":{"deleted":{"type":"boolean","example":true}},"required":["deleted"],"example":{"deleted":true}}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":400},"message":{"type":"string","example":"Bad Request"},"error":{"type":"string","example":"Validation failed"}}}}}},"401":{"description":"Unauthorized","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":401},"message":{"type":"string","example":"Unauthorized"}}}}}},"500":{"description":"Internal Server Error","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":500},"message":{"type":"string","example":"Internal server error"}}}}}}},"parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"number","example":0}}],"security":[{"bearerAuth":[]}],"x-code-samples":[{"lang":"curl","source":"curl -X DELETE \"https://nest-scramble-demo.onrender.com/api/products/{id}\""},{"lang":"javascript","source":"fetch('https://nest-scramble-demo.onrender.com/api/products/{id}', { method: 'DELETE' })\n  .then(response => response.json())\n  .then(data => console.log(data));"}]}},"/api/products/upload":{"post":{"operationId":"ProductsController_uploadImage","summary":"Upload a product image.","tags":["Products"],"responses":{"201":{"description":"Created","content":{"application/json":{"schema":{"type":"object","properties":{"filename":{"type":"string","example":"John Doe"}},"required":["filename"],"example":{"filename":"John Doe"}}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":400},"message":{"type":"string","example":"Bad Request"},"error":{"type":"string","example":"Validation failed"}}}}}},"500":{"description":"Internal Server Error","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":500},"message":{"type":"string","example":"Internal server error"}}}}}}},"requestBody":{"required":true,"content":{"multipart/form-data":{"schema":{"type":"object","properties":{"file":{"type":"string","format":"binary"}},"required":["file"]}}}},"x-code-samples":[{"lang":"curl","source":"curl -X POST \"https://nest-scramble-demo.onrender.com/api/products/upload\" \\\n  -F \"file=@/path/to/file\""},{"lang":"javascript","source":"const form = new FormData();\nform.append('file', fileInput.files[0]);\n\nfetch('https://nest-scramble-demo.onrender.com/api/products/upload', {\n  method: 'POST',\n  body: form,\n})\n  .then(response => response.json())\n  .then(data => console.log(data));"}]}},"/api/auth/login":{"post":{"operationId":"AuthController_login","summary":"login","tags":["Auth"],"responses":{"201":{"description":"Created","content":{"application/json":{"schema":{"type":"object","properties":{"access_token":{"type":"string","example":"sample value"},"token_type":{"type":"string","example":"sample value"}},"required":["access_token","token_type"],"example":{"access_token":"sample value","token_type":"sample value"}}}}},"400":{"description":"Bad Request","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":400},"message":{"type":"string","example":"Bad Request"},"error":{"type":"string","example":"Validation failed"}}}}}},"500":{"description":"Internal Server Error","content":{"application/json":{"schema":{"type":"object","properties":{"statusCode":{"type":"number","example":500},"message":{"type":"string","example":"Internal server error"}}}}}}},"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/LoginDto"}}}},"x-code-samples":[{"lang":"curl","source":"curl -X POST \"https://nest-scramble-demo.onrender.com/api/auth/login\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{}'"},{"lang":"javascript","source":"fetch('https://nest-scramble-demo.onrender.com/api/auth/login', {\n  method: 'POST',\n  headers: {\n    'Content-Type': 'application/json',\n  },\n  body: JSON.stringify({}),\n})\n  .then(response => response.json())\n  .then(data => console.log(data));"}]}}},"components":{"schemas":{"UserResponseDto":{"type":"object","properties":{"id":{"type":"number","example":1},"name":{"type":"string","example":"John Doe"},"email":{"type":"string","example":"user@example.com"},"age":{"type":"number","example":25}},"required":["id","name","email","age"],"example":{"id":1,"name":"John Doe","email":"user@example.com","age":25}},"CreateUserDto":{"type":"object","properties":{"name":{"type":"string","example":"John Doe","minLength":2},"email":{"type":"string","example":"user@example.com","format":"email"},"age":{"type":"integer","example":25,"minimum":18}},"required":["name","email","age"],"example":{"name":"John Doe","email":"user@example.com","age":25}},"UpdateUserDto":{"type":"object","properties":{"name":{"type":"string","example":"John Doe","minLength":2},"email":{"type":"string","example":"user@example.com","format":"email"}},"example":{}},"ProductCategoryDto":{"type":"object","properties":{"name":{"type":"string","example":"John Doe","minLength":2},"description":{"type":"string","example":"Sample description text"},"id":{"type":"number","example":1},"createdAt":{"type":"string","format":"date-time","example":"2024-01-01T00:00:00.000Z"}},"required":["name","id","createdAt"],"example":{"name":"John Doe","id":1,"createdAt":"2024-01-01T00:00:00.000Z"}},"ProductResponseDto":{"type":"object","properties":{"name":{"type":"string","example":"John Doe"},"price":{"type":"number","example":99.99},"status":{"type":"string","enum":["draft","active","archived"],"example":"draft"},"category":{"$ref":"#/components/schemas/ProductCategoryDto"},"id":{"type":"number","example":1},"createdAt":{"type":"string","format":"date-time","example":"2024-01-01T00:00:00.000Z"}},"required":["name","price","status","category","id","createdAt"],"example":{"name":"John Doe","price":99.99,"status":"draft","id":1,"createdAt":"2024-01-01T00:00:00.000Z"}},"CreateProductDto":{"type":"object","properties":{"name":{"type":"string","example":"John Doe","minLength":2},"price":{"type":"integer","example":99.99,"minimum":0},"status":{"type":"string","enum":["draft","active","archived"],"example":"draft"},"category":{"$ref":"#/components/schemas/ProductCategoryDto"}},"required":["name","price","status","category"],"example":{"name":"John Doe","price":99.99,"status":"draft"}},"UpdateProductDto":{"type":"object","properties":{"name":{"type":"string","example":"John Doe","minLength":2},"price":{"type":"integer","example":99.99,"minimum":0}},"example":{}},"LoginDto":{"type":"object","properties":{"username":{"type":"string","example":"John Doe"},"password":{"type":"string","example":"SecurePassword123!"}},"required":["username","password"],"example":{"username":"John Doe","password":"SecurePassword123!"}}},"securitySchemes":{"bearerAuth":{"type":"http","scheme":"bearer","bearerFormat":"JWT","description":"Enter your Bearer token in the format: Bearer <token>"},"apiKey":{"type":"apiKey","in":"header","name":"X-API-Key","description":"API Key for authentication"}}}}</script>
+<script type="application/json" id="scramble-ws">{"generator":"nest-scramble","info":{"title":"Nest-Scramble Live Demo","version":"1.0.0"},"gateways":[{"name":"OrdersGateway","namespace":"/orders","events":[{"event":"subscribeOrder","summary":"Subscribe to order status updates for a given order ID.","payload":{"type":"string"},"response":{"type":"object","title":"{ status: string; orderId: string; }","properties":{"status":{"type":"string"},"orderId":{"type":"string"}},"required":["status","orderId"]}}]}]}</script>
+<script type="application/json" id="scramble-graphql">{"generator":"nest-scramble","info":{"title":"Nest-Scramble Live Demo","version":"1.0.0"},"resolvers":[{"name":"PostsResolver","typeName":"Post","operations":[{"kind":"query","name":"posts","summary":"List all posts.","args":[],"response":{"type":"array","items":{"type":"object","title":"Post","properties":{"id":{"type":"number"},"title":{"type":"string"},"published":{"type":"boolean"}},"required":["id","title","published"]}},"sample":"query {\n  posts {\n    id\n    title\n    published\n  }\n}"},{"kind":"query","name":"post","summary":"Get a single post by ID.","args":[{"name":"id","required":true,"schema":{"type":"number"}}],"response":{"type":"object","title":"Post","properties":{"id":{"type":"number"},"title":{"type":"string"},"published":{"type":"boolean"}},"required":["id","title","published"]},"sample":"query {\n  post(id: 1) {\n    id\n    title\n    published\n  }\n}"},{"kind":"mutation","name":"togglePublished","summary":"Toggle the published flag of a post.","args":[{"name":"id","required":true,"schema":{"type":"number"}}],"response":{"type":"object","title":"Post","properties":{"id":{"type":"number"},"title":{"type":"string"},"published":{"type":"boolean"}},"required":["id","title","published"]},"sample":"mutation {\n  togglePublished(id: 1) {\n    id\n    title\n    published\n  }\n}"}]}]}</script>
+  <header class="topbar">
+    <div class="brand" id="brand" role="button" tabindex="0" title="Overview">
+      <span class="brand-dot"></span>
+      <span class="brand-title" id="api-title">API Documentation</span>
+      <span class="chip" id="api-version" hidden></span>
+    </div>
+    <div class="topbar-actions">
+      <input type="search" id="search" class="search" placeholder="Search requests…" autocomplete="off" />
+      <select id="env-select" class="env-select" title="Environment"></select>
+      <button type="button" class="btn-ghost" id="auth-btn" aria-label="Global authorization"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>Auth</button>
+      <button type="button" class="btn-ghost" id="export-postman" aria-label="Export Postman collection"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Postman</button>
+      <a class="btn-ghost" id="spec-link" href="./openapi.json" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>OpenAPI</a>
+      <button type="button" class="btn-ghost btn-theme" id="theme-toggle" aria-label="Toggle theme"><svg class="icon-sun" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><svg class="icon-moon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+    </div>
+    <div class="auth-pop" id="auth-pop" hidden>
+      <div class="auth-title">Global Authorization <span class="dim">(default for every request)</span></div>
+      <label class="auth-field"><span>Type</span>
+        <select id="auth-type">
+          <option value="none">No auth</option>
+          <option value="bearer">Bearer token</option>
+          <option value="apikey">API key header</option>
+        </select>
+      </label>
+      <label class="auth-field" id="auth-header-row" hidden><span>Header</span>
+        <input id="auth-header" placeholder="X-API-Key" autocomplete="off" />
+      </label>
+      <label class="auth-field" id="auth-token-row" hidden><span>Value</span>
+        <input id="auth-token" placeholder="token…" autocomplete="off" />
+      </label>
+      <div class="dim auth-note">Stored in your browser only. Requests can override it in their Auth tab.</div>
+    </div>
+    <div class="auth-pop env-pop" id="env-pop" hidden>
+      <div class="auth-title">Environments <span class="dim">(base URL + variables)</span></div>
+      <div class="env-list" id="env-list"></div>
+      <label class="auth-field"><span>Name</span>
+        <input id="env-name" placeholder="staging" autocomplete="off" />
+      </label>
+      <label class="auth-field"><span>Base URL <span class="dim">(optional — overrides the server URL)</span></span>
+        <input id="env-base" placeholder="https://staging.example.com" autocomplete="off" />
+      </label>
+      <label class="auth-field"><span>Variables <span class="dim">(KEY=value, one per line — use {{KEY}} anywhere)</span></span>
+        <textarea id="env-vars" rows="4" placeholder="userId=42&#10;token=abc" spellcheck="false"></textarea>
+      </label>
+      <div class="env-actions">
+        <button type="button" class="btn-add" id="env-save">Save</button>
+        <button type="button" class="btn-add" id="env-new">New</button>
+        <button type="button" class="btn-add env-delete" id="env-delete" hidden>Delete</button>
+      </div>
+      <div class="dim auth-note">Stored in your browser only.</div>
+    </div>
+  </header>
+  <div class="layout">
+    <nav class="sidebar">
+      <button type="button" class="overview-link active" id="overview-link">
+        <svg class="ov-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Overview
+      </button>
+      <div class="side-tabs">
+        <button type="button" class="side-tab active" data-side="collections">Collections</button>
+        <button type="button" class="side-tab" data-side="history">History <span class="tab-count" id="history-count" hidden></span></button>
+      </div>
+      <div id="side-collections" class="side-panel"></div>
+      <div id="side-history" class="side-panel" hidden></div>
+    </nav>
+    <main class="workspace">
+      <section id="welcome" class="welcome">
+        <div class="welcome-inner">
+          <div class="ov-badge">⚡ generated by nest-scramble</div>
+          <h1 id="welcome-title">API Documentation</h1>
+          <p id="welcome-desc" class="dim"></p>
+          <div class="ov-cards">
+            <div class="ov-card"><b id="ov-requests">—</b><span>Requests</span></div>
+            <div class="ov-card"><b id="ov-groups">—</b><span>Groups</span></div>
+            <div class="ov-card"><b id="ov-version">—</b><span>Version</span></div>
+            <div class="ov-card ov-card-wide"><b id="ov-base" class="ov-base">—</b><span>Base URL</span></div>
+          </div>
+          <div class="ov-methods" id="ov-methods"></div>
+          <p class="dim ov-hint">Select a request from the sidebar to inspect, edit parameters and send it live.</p>
+          <div class="ov-schemas" id="ov-schemas"></div>
+        </div>
+      </section>
+      <section id="request-view" hidden>
+        <div class="crumbs">
+          <button type="button" class="crumb-link" id="crumb-overview">Overview</button>
+          <span class="crumb-sep">›</span>
+          <span class="crumb" id="crumb-group"></span>
+          <span class="crumb-sep">›</span>
+          <b class="crumb" id="crumb-name"></b>
+        </div>
+        <div class="req-bar">
+          <span class="method" id="req-method">GET</span>
+          <input class="url-input" id="url-input" spellcheck="false" autocomplete="off" />
+          <button type="button" class="btn-send" id="send-btn">Send</button>
+          <button type="button" class="btn-ghost btn-share" id="share-btn" title="Copy a shareable link to this request">🔗</button>
+        </div>
+        <div class="req-summary">
+          <span id="req-summary-text" class="dim"></span>
+          <span id="req-chips"></span>
+          <span class="req-hint dim">Ctrl+Enter to send</span>
+        </div>
+        <div class="tabs" id="tabs">
+          <button type="button" class="tab active" data-tab="params">Params<span class="dot" id="dot-params" hidden></span></button>
+          <button type="button" class="tab" data-tab="auth">Auth<span class="dot" id="dot-auth" hidden></span></button>
+          <button type="button" class="tab" data-tab="headers">Headers <span class="tab-count" id="count-headers" hidden></span></button>
+          <button type="button" class="tab" data-tab="body">Body</button>
+          <button type="button" class="tab" data-tab="docs">Docs</button>
+          <button type="button" class="tab" data-tab="code">Code</button>
+        </div>
+        <div class="panel" data-panel="params" id="panel-params"></div>
+        <div class="panel" data-panel="auth" id="panel-auth" hidden></div>
+        <div class="panel" data-panel="headers" id="panel-headers" hidden></div>
+        <div class="panel" data-panel="body" id="panel-body" hidden></div>
+        <div class="panel" data-panel="docs" id="panel-docs" hidden></div>
+        <div class="panel" data-panel="code" id="panel-code" hidden>
+          <div class="code-bar">
+            <select id="code-lang">
+              <option value="curl">cURL</option>
+              <option value="fetch">JavaScript — fetch</option>
+              <option value="axios">JavaScript — axios</option>
+            </select>
+            <button type="button" class="btn-add" id="copy-code">Copy</button>
+          </div>
+          <pre class="code" id="code-snippet"></pre>
+        </div>
+        <div class="resp">
+          <div class="resp-head">
+            <div class="resp-tabs">
+              <span class="resp-title">Response</span>
+              <button type="button" class="rtab active" data-rtab="body">Body</button>
+              <button type="button" class="rtab" data-rtab="headers">Headers</button>
+              <button type="button" class="btn-add btn-copy-resp" id="copy-resp" hidden>Copy</button>
+              <button type="button" class="btn-add btn-copy-resp" id="dl-resp" hidden>Download</button>
+            </div>
+            <span class="resp-meta" id="resp-meta"></span>
+          </div>
+          <div class="resp-panel" data-rpanel="body" id="resp-body">
+            <div class="resp-empty">Hit <b>Send</b> to see the response here.</div>
+          </div>
+          <div class="resp-panel" data-rpanel="headers" id="resp-headers" hidden></div>
+        </div>
+      </section>
+      <section id="ws-view" hidden>
+        <div class="crumbs">
+          <button type="button" class="crumb-link" id="ws-crumb-overview">Overview</button>
+          <span class="crumb-sep">›</span>
+          <span class="crumb" id="ws-crumb-gateway"></span>
+          <span class="crumb-sep">›</span>
+          <b class="crumb" id="ws-crumb-event"></b>
+        </div>
+        <div class="req-bar">
+          <span class="method method-ws">WS</span>
+          <input class="url-input" id="ws-url" spellcheck="false" autocomplete="off" />
+          <select id="ws-transport" class="raw-lang" title="Transport">
+            <option value="socketio">Socket.IO</option>
+            <option value="ws">Raw WebSocket</option>
+          </select>
+          <button type="button" class="btn-send" id="ws-connect">Connect</button>
+        </div>
+        <div class="req-summary">
+          <span id="ws-summary" class="dim"></span>
+          <span class="chip" id="ws-status">disconnected</span>
+        </div>
+        <h4>Send event</h4>
+        <div class="ws-compose">
+          <input id="ws-event-name" class="ws-event-input" placeholder="event name" spellcheck="false" autocomplete="off" />
+          <button type="button" class="btn-send" id="ws-send">Send</button>
+        </div>
+        <textarea class="body-editor plain-editor" id="ws-payload" rows="6" spellcheck="false" placeholder="JSON payload (optional)"></textarea>
+        <div class="resp">
+          <div class="resp-head">
+            <div class="resp-tabs">
+              <span class="resp-title">Live events</span>
+              <button type="button" class="btn-add" id="ws-clear">Clear</button>
+            </div>
+            <span class="resp-meta" id="ws-meta"></span>
+          </div>
+          <div class="resp-panel" id="ws-log">
+            <div class="resp-empty">Connect and send an event to see live traffic here.</div>
+          </div>
+        </div>
+        <div class="ws-doc" id="ws-doc"></div>
+      </section>
+      <section id="gql-view" hidden>
+        <div class="crumbs">
+          <button type="button" class="crumb-link" id="gql-crumb-overview">Overview</button>
+          <span class="crumb-sep">›</span>
+          <span class="crumb" id="gql-crumb-resolver"></span>
+          <span class="crumb-sep">›</span>
+          <b class="crumb" id="gql-crumb-op"></b>
+        </div>
+        <div class="req-bar">
+          <span class="method method-gql" id="gql-kind">QUERY</span>
+          <input class="url-input" id="gql-url" spellcheck="false" autocomplete="off" />
+          <button type="button" class="btn-send" id="gql-run">Run</button>
+        </div>
+        <div class="req-summary">
+          <span id="gql-summary" class="dim"></span>
+        </div>
+        <h4 class="gql-label">GraphQL operation</h4>
+        <textarea class="body-editor plain-editor gql-editor" id="gql-query" rows="10" spellcheck="false" placeholder="query { ... }"></textarea>
+        <h4 class="gql-label">Variables <span class="dim">(JSON object, optional)</span></h4>
+        <textarea class="body-editor plain-editor" id="gql-variables" rows="3" spellcheck="false" placeholder="{ &quot;key&quot;: &quot;value&quot; }"></textarea>
+        <div class="resp">
+          <div class="resp-head">
+            <div class="resp-tabs"><span class="resp-title">Response</span></div>
+            <span class="resp-meta" id="gql-meta"></span>
+          </div>
+          <div class="resp-panel" id="gql-resp">
+            <div class="resp-empty">Hit <b>Run</b> to execute the operation against your GraphQL endpoint.</div>
+          </div>
+        </div>
+        <div class="ws-doc" id="gql-doc"></div>
+      </section>
+    </main>
+  </div>
+  <script>
+  'use strict';
+  (function () {
+    var SPEC_URL = './openapi.json';
+
+    /* ------------------------------------------------------------------ *
+     * Utilities
+     * ------------------------------------------------------------------ */
+
+    function esc(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function el(html) {
+      var t = document.createElement('template');
+      t.innerHTML = html.trim();
+      return t.content.firstElementChild;
+    }
+
+    function byId(id) { return document.getElementById(id); }
+
+    function store(key, value) {
+      try {
+        if (value === undefined) return localStorage.getItem(key);
+        localStorage.setItem(key, value);
+      } catch (e) { return null; }
+    }
+
+    function copyText(text, button) {
+      var done = function () {
+        var old = button.textContent;
+        button.textContent = 'Copied!';
+        setTimeout(function () { button.textContent = old; }, 1200);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, done);
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (e) { /* ignore */ }
+        document.body.removeChild(ta);
+        done();
+      }
+    }
+
+    /** Lightweight JSON syntax highlighter (operates on escaped text). */
+    function hljson(text) {
+      return esc(text).replace(
+        /(&quot;.*?&quot;)(\s*:)?|\b(true|false|null)\b|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,
+        function (m, str, colon, bool, num) {
+          if (str) return '<span class="' + (colon ? 'j-key' : 'j-str') + '">' + str + '</span>' + (colon || '');
+          if (bool) return '<span class="j-bool">' + bool + '</span>';
+          if (num) return '<span class="j-num">' + num + '</span>';
+          return m;
+        }
+      );
+    }
+
+    /* ------------------------------------------------------------------ *
+     * Theme
+     * ------------------------------------------------------------------ */
+
+    var root = document.documentElement;
+    var savedTheme = store('scramble-theme');
+    if (savedTheme === 'dark' || savedTheme === 'light') root.setAttribute('data-theme', savedTheme);
+
+    byId('theme-toggle').addEventListener('click', function () {
+      var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      store('scramble-theme', next);
+    });
+
+    /* ------------------------------------------------------------------ *
+     * Global Authorization (Postman-style, persisted locally)
+     * ------------------------------------------------------------------ */
+
+    function getAuth() {
+      try { return JSON.parse(store('scramble-auth') || '{}'); } catch (e) { return {}; }
+    }
+
+    function saveAuth(auth) {
+      store('scramble-auth', JSON.stringify(auth));
+      byId('auth-btn').classList.toggle('auth-on', auth.type === 'bearer' || auth.type === 'apikey');
+    }
+
+    /** Programmatically sets the global auth and syncs the popover. */
+    var setGlobalAuth = null;
+
+    (function initAuthPop() {
+      var pop = byId('auth-pop');
+      var typeEl = byId('auth-type');
+      var tokenEl = byId('auth-token');
+      var headerEl = byId('auth-header');
+
+      var auth = getAuth();
+      typeEl.value = auth.type || 'none';
+      tokenEl.value = auth.token || '';
+      headerEl.value = auth.header || '';
+      syncRows();
+      saveAuth(auth);
+
+      function syncRows() {
+        byId('auth-token-row').hidden = typeEl.value === 'none';
+        byId('auth-header-row').hidden = typeEl.value !== 'apikey';
+      }
+
+      function persist() {
+        syncRows();
+        saveAuth({ type: typeEl.value, token: tokenEl.value, header: headerEl.value });
+        if (current) { renderAuthPanel(); renderHeadersPanel(); }
+      }
+
+      setGlobalAuth = function (next) {
+        typeEl.value = next.type || 'none';
+        tokenEl.value = next.token || '';
+        headerEl.value = next.header || '';
+        persist();
+      };
+
+      typeEl.addEventListener('change', persist);
+      tokenEl.addEventListener('input', persist);
+      headerEl.addEventListener('input', persist);
+
+      byId('auth-btn').addEventListener('click', function (event) {
+        event.stopPropagation();
+        pop.hidden = !pop.hidden;
+      });
+      pop.addEventListener('click', function (event) { event.stopPropagation(); });
+      document.addEventListener('click', function () { pop.hidden = true; });
+    })();
+
+    /* ------------------------------------------------------------------ *
+     * Token capture — a successful response that carries a bearer token
+     * (login, refresh, …) becomes the global Authorization automatically,
+     * so the next protected request just works. Postman needs a script for
+     * this; here it is the default.
+     * ------------------------------------------------------------------ */
+
+    var TOKEN_KEYS = ['access_token', 'accessToken', 'access-token', 'token', 'jwt', 'id_token', 'idToken', 'bearer', 'authToken', 'auth_token'];
+
+    function findToken(value, depth) {
+      if (!value || typeof value !== 'object' || depth > 3) return null;
+      for (var i = 0; i < TOKEN_KEYS.length; i++) {
+        var candidate = value[TOKEN_KEYS[i]];
+        if (typeof candidate === 'string' && candidate.length >= 8 && candidate.indexOf(' ') === -1) return candidate;
+      }
+      var keys = Object.keys(value);
+      for (var j = 0; j < keys.length; j++) {
+        var nested = findToken(value[keys[j]], depth + 1);
+        if (nested) return nested;
+      }
+      return null;
+    }
+
+    function captureToken(text) {
+      var parsed;
+      try { parsed = JSON.parse(text); } catch (e) { return false; }
+      var token = findToken(parsed, 0);
+      if (!token || !setGlobalAuth) return false;
+      var currentAuth = getAuth();
+      if (currentAuth.type === 'bearer' && currentAuth.token === token) return false;
+      setGlobalAuth({ type: 'bearer', token: token, header: currentAuth.header || '' });
+      toast('Bearer token captured — applied to all requests');
+      return true;
+    }
+
+    function toast(message) {
+      var node = el('<div class="toast">' + esc(message) + '</div>');
+      document.body.appendChild(node);
+      requestAnimationFrame(function () { node.classList.add('show'); });
+      setTimeout(function () {
+        node.classList.remove('show');
+        setTimeout(function () { node.remove(); }, 300);
+      }, 3200);
+    }
+
+    /* ------------------------------------------------------------------ *
+     * Environments (Postman-style: base URL + {{variables}}, persisted)
+     * ------------------------------------------------------------------ */
+
+    function getEnvs() {
+      try { return JSON.parse(store('scramble-envs') || '[]'); } catch (e) { return []; }
+    }
+
+    function saveEnvs(envs) { store('scramble-envs', JSON.stringify(envs)); }
+
+    function activeEnv() {
+      var name = store('scramble-env-active');
+      if (!name) return null;
+      var envs = getEnvs();
+      for (var i = 0; i < envs.length; i++) if (envs[i].name === name) return envs[i];
+      return null;
+    }
+
+    function parseVars(text) {
+      var vars = {};
+      String(text || '').split('\n').forEach(function (line) {
+        var eq = line.indexOf('=');
+        if (eq > 0) vars[line.slice(0, eq).trim()] = line.slice(eq + 1).trim();
+      });
+      return vars;
+    }
+
+    function varsText(vars) {
+      return Object.keys(vars || {}).map(function (key) { return key + '=' + vars[key]; }).join('\n');
+    }
+
+    /** Replaces {{name}} placeholders with the active environment's variables. */
+    function applyVars(text) {
+      var env = activeEnv();
+      if (!env || !text) return text;
+      return String(text).replace(/\{\{\s*([\w.-]+)\s*\}\}/g, function (match, key) {
+        return env.vars && env.vars[key] !== undefined ? env.vars[key] : match;
+      });
+    }
+
+    var envEditing = null;
+
+    function renderEnvSelect() {
+      var select = byId('env-select');
+      var activeName = store('scramble-env-active') || '';
+      var options = '<option value="">No environment</option>';
+      getEnvs().forEach(function (env) {
+        options += '<option value="' + esc(env.name) + '"' + (env.name === activeName ? ' selected' : '') + '>' + esc(env.name) + '</option>';
+      });
+      options += '<option value="__manage">⚙ Manage environments…</option>';
+      select.innerHTML = options;
+    }
+
+    function renderEnvList() {
+      var list = byId('env-list');
+      var envs = getEnvs();
+      if (!envs.length) {
+        list.innerHTML = '<div class="dim env-empty">No environments yet — create one below.</div>';
+        return;
+      }
+      list.innerHTML = '';
+      envs.forEach(function (env) {
+        var row = el('<button type="button" class="env-item' + (envEditing === env.name ? ' active' : '') + '">' +
+          esc(env.name) + (env.baseUrl ? ' <span class="dim">' + esc(env.baseUrl) + '</span>' : '') +
+        '</button>');
+        row.addEventListener('click', function () {
+          envEditing = env.name;
+          byId('env-name').value = env.name;
+          byId('env-base').value = env.baseUrl || '';
+          byId('env-vars').value = varsText(env.vars);
+          byId('env-delete').hidden = false;
+          renderEnvList();
+        });
+        list.appendChild(row);
+      });
+    }
+
+    (function initEnvironments() {
+      var pop = byId('env-pop');
+      var select = byId('env-select');
+
+      renderEnvSelect();
+
+      select.addEventListener('change', function () {
+        if (select.value === '__manage') {
+          renderEnvSelect();
+          renderEnvList();
+          byId('auth-pop').hidden = true;
+          // The click that picked the option also reaches the document
+          // listener in some browsers; deferring keeps the popup open.
+          setTimeout(function () { pop.hidden = false; }, 0);
+          return;
+        }
+        store('scramble-env-active', select.value);
+      });
+
+      byId('env-new').addEventListener('click', function () {
+        envEditing = null;
+        byId('env-name').value = '';
+        byId('env-base').value = '';
+        byId('env-vars').value = '';
+        byId('env-delete').hidden = true;
+        renderEnvList();
+      });
+
+      byId('env-save').addEventListener('click', function () {
+        var name = byId('env-name').value.trim();
+        if (!name) return;
+        var envs = getEnvs().filter(function (env) { return env.name !== envEditing && env.name !== name; });
+        envs.push({ name: name, baseUrl: byId('env-base').value.trim(), vars: parseVars(byId('env-vars').value) });
+        saveEnvs(envs);
+        store('scramble-env-active', name);
+        envEditing = name;
+        byId('env-delete').hidden = false;
+        renderEnvSelect();
+        renderEnvList();
+      });
+
+      byId('env-delete').addEventListener('click', function () {
+        if (!envEditing) return;
+        saveEnvs(getEnvs().filter(function (env) { return env.name !== envEditing; }));
+        if (store('scramble-env-active') === envEditing) store('scramble-env-active', '');
+        envEditing = null;
+        byId('env-name').value = '';
+        byId('env-base').value = '';
+        byId('env-vars').value = '';
+        byId('env-delete').hidden = true;
+        renderEnvSelect();
+        renderEnvList();
+      });
+
+      pop.addEventListener('click', function (event) { event.stopPropagation(); });
+      document.addEventListener('click', function () { pop.hidden = true; });
+    })();
+
+    /* ------------------------------------------------------------------ *
+     * Schema helpers ($ref resolution + example generation)
+     * ------------------------------------------------------------------ */
+
+    var spec = null;
+
+    function resolveRef(schema, depth) {
+      if (!schema || depth > 12) return schema || {};
+      if (schema.$ref) {
+        var parts = schema.$ref.replace('#/', '').split('/');
+        var node = spec;
+        for (var i = 0; i < parts.length && node; i++) node = node[parts[i]];
+        return resolveRef(node || {}, depth + 1);
+      }
+      return schema;
+    }
+
+    function exampleOf(schema, depth, name) {
+      schema = resolveRef(schema, 0);
+      if (!schema || depth > 8) return null;
+      // Object schemas are always assembled from their properties: the
+      // document-level example only covers scalars, and trusting it produced
+      // request bodies with missing required fields.
+      var assembles = schema.properties && Object.keys(schema.properties).length;
+      if (schema.example !== undefined && !assembles) return schema.example;
+      if (schema.enum && schema.enum.length) return schema.enum[0];
+
+      switch (schema.type) {
+        case 'object': {
+          var out = {};
+          var props = schema.properties || {};
+          Object.keys(props).forEach(function (key) {
+            out[key] = exampleOf(props[key], depth + 1, key);
+          });
+          return out;
+        }
+        case 'array':
+          return [exampleOf(schema.items || {}, depth + 1, name)];
+        case 'integer':
+        case 'number':
+          if (schema.minimum !== undefined) return schema.minimum;
+          return schema.type === 'integer' ? 1 : 1.5;
+        case 'boolean':
+          return true;
+        case 'string': {
+          if (schema.format === 'date-time') return new Date().toISOString();
+          if (schema.format === 'date') return new Date().toISOString().slice(0, 10);
+          if (schema.format === 'email') return 'user@example.com';
+          if (schema.format === 'uuid') return '00000000-0000-4000-8000-000000000000';
+          if (schema.format === 'uri' || schema.format === 'url') return 'https://example.com';
+          // Realistic values from the property name, so consoles are
+          // pre-filled with data that actually exercises the API.
+          var n = String(name || '').toLowerCase();
+          if (n.indexOf('email') !== -1) return 'user@example.com';
+          if (n.indexOf('password') !== -1) return 'SecurePassword123!';
+          if (n.indexOf('text') !== -1 || n.indexOf('message') !== -1 || n.indexOf('body') !== -1 || n.indexOf('comment') !== -1) return 'Hello from the docs console 👋';
+          if (n.indexOf('title') !== -1 || n.indexOf('subject') !== -1) return 'Order shipped';
+          if (n.indexOf('user') !== -1 || n.indexOf('author') !== -1 || n.indexOf('name') !== -1) return 'amira';
+          if (n.indexOf('url') !== -1 || n.indexOf('link') !== -1) return 'https://example.com';
+          if (n.indexOf('phone') !== -1) return '+15550100';
+          if (n.indexOf('date') !== -1 || n.indexOf('time') !== -1 || /at$/.test(n)) return new Date().toISOString();
+          return 'string';
+        }
+        default:
+          if (schema.oneOf && schema.oneOf.length) return exampleOf(schema.oneOf[0], depth + 1, name);
+          if (schema.anyOf && schema.anyOf.length) return exampleOf(schema.anyOf[0], depth + 1, name);
+          if (schema.allOf && schema.allOf.length) return exampleOf(schema.allOf[0], depth + 1, name);
+          if (schema.properties) { schema.type = 'object'; return exampleOf(schema, depth, name); }
+          return null;
+      }
+    }
+
+    function typeLabel(schema) {
+      schema = resolveRef(schema, 0);
+      if (!schema) return '';
+      if (schema.type === 'array') return typeLabel(schema.items || {}) + '[]';
+      if (schema.enum) return 'enum';
+      if (schema.type) return schema.type + (schema.format ? ' (' + schema.format + ')' : '');
+      if (schema.oneOf) return 'oneOf';
+      if (schema.properties) return 'object';
+      return '';
+    }
+
+    function constraintsLabel(schema) {
+      schema = resolveRef(schema, 0);
+      if (!schema) return '';
+      var parts = [];
+      if (schema.minLength !== undefined) parts.push('min ' + schema.minLength);
+      if (schema.maxLength !== undefined) parts.push('max ' + schema.maxLength);
+      if (schema.minimum !== undefined) parts.push('≥ ' + schema.minimum);
+      if (schema.maximum !== undefined) parts.push('≤ ' + schema.maximum);
+      if (schema.pattern) parts.push('pattern');
+      if (schema.enum) parts.push(schema.enum.join(' | '));
+      return parts.join(', ');
+    }
+
+    /** Renders a schema as an indented property tree. */
+    function schemaTree(schema, depth) {
+      schema = resolveRef(schema, 0);
+      if (!schema || depth > 6) return '';
+      if (schema.type === 'array') {
+        return schemaTree(schema.items || {}, depth);
+      }
+      var props = schema.properties;
+      if (!props) return '';
+      var required = schema.required || [];
+      var rows = Object.keys(props).map(function (name) {
+        var p = resolveRef(props[name], 0);
+        var isReq = required.indexOf(name) !== -1;
+        var nested = (p.type === 'object' || (p.type === 'array' && resolveRef(p.items || {}, 0).properties) || p.properties)
+          ? schemaTree(p, depth + 1) : '';
+        var constraints = constraintsLabel(p);
+        return '<div class="prop" style="--indent:' + depth + '">' +
+          '<span class="prop-name">' + esc(name) + (isReq ? '<i class="req">*</i>' : '') + '</span>' +
+          '<span class="prop-type">' + esc(typeLabel(p)) + '</span>' +
+          (constraints ? '<span class="prop-constraints">' + esc(constraints) + '</span>' : '') +
+          (p.description ? '<span class="prop-desc">' + esc(p.description) + '</span>' : '') +
+          '</div>' + nested;
+      });
+      return rows.join('');
+    }
+
+    /* ------------------------------------------------------------------ *
+     * Operation model
+     * ------------------------------------------------------------------ */
+
+    var METHOD_ORDER = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'];
+    var opsById = {};
+    var groupsCache = {};
+    var current = null;
+    var reqAuth = {};
+    var bodyMode = 'none';
+
+    function collectOperations() {
+      var groups = {};
+      Object.keys(spec.paths || {}).forEach(function (p) {
+        METHOD_ORDER.forEach(function (m) {
+          var op = spec.paths[p][m];
+          if (!op) return;
+          var tag = (op.tags && op.tags[0]) || p.split('/')[1] || 'default';
+          var item = { path: p, method: m, op: op, tag: tag, id: opId(m, p) };
+          opsById[item.id] = item;
+          (groups[tag] = groups[tag] || []).push(item);
+        });
+      });
+      groupsCache = groups;
+      return groups;
+    }
+
+    function opId(method, p) {
+      return 'op-' + method + '-' + p.replace(/[^a-zA-Z0-9]/g, '-');
+    }
+
+    function highlightPath(p) {
+      return esc(p).replace(/\{([^}]+)\}/g, '<span class="path-param">{$1}</span>');
+    }
+
+    function bodyInfo(op) {
+      var rb = op.requestBody;
+      if (!rb || !rb.content) return { contentType: null, schema: null, example: null, isMultipart: false };
+      var ct = Object.keys(rb.content)[0];
+      var schema = rb.content[ct].schema || null;
+      var example = ct === 'application/json' && schema ? exampleOf(schema, 0) : null;
+      return { contentType: ct, schema: schema, example: example, isMultipart: ct === 'multipart/form-data' };
+    }
+
+    function baseUrl() {
+      var base = (spec.servers && spec.servers[0] && spec.servers[0].url) || '';
+      if (base.indexOf(location.origin) === 0) base = base.slice(location.origin.length);
+      return base;
+    }
+
+    /* ------------------------------------------------------------------ *
+     * Overview page
+     * ------------------------------------------------------------------ */
+
+    function showOverview() {
+      current = null;
+      try { history.replaceState(null, '', location.pathname); } catch (e) { /* ignore */ }
+      byId('welcome').hidden = false;
+      byId('request-view').hidden = true;
+      byId('ws-view').hidden = true;
+      byId('gql-view').hidden = true;
+      byId('overview-link').classList.add('active');
+      var active = document.querySelector('.nav-item.active');
+      if (active) active.classList.remove('active');
+    }
+
+    byId('overview-link').addEventListener('click', showOverview);
+    byId('brand').addEventListener('click', showOverview);
+    byId('brand').addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') showOverview();
+    });
+
+    function renderOverview(groups) {
+      var info = spec.info || {};
+      var opCount = Object.keys(opsById).length;
+      var groupCount = Object.keys(groups).length;
+      var schemaCount = Object.keys((spec.components && spec.components.schemas) || {}).length;
+
+      byId('ov-requests').textContent = opCount;
+      byId('ov-groups').textContent = groupCount;
+      byId('ov-version').textContent = info.version ? 'v' + info.version : '—';
+      byId('ov-base').textContent = (baseUrl() && baseUrl() !== '') ? baseUrl() : location.origin;
+
+      var perMethod = {};
+      Object.keys(opsById).forEach(function (id) {
+        var m = opsById[id].method;
+        perMethod[m] = (perMethod[m] || 0) + 1;
+      });
+      byId('ov-methods').innerHTML = METHOD_ORDER.filter(function (m) { return perMethod[m]; })
+        .map(function (m) {
+          return '<span class="ov-method" title="' + perMethod[m] + ' ' + m.toUpperCase() + ' endpoint(s)"><span class="method method-sm method-' + m + '">' +
+            methodShort(m) + '</span> ' + perMethod[m] + '</span>';
+        }).join('');
+
+      // Add a fourth card dynamically when schemas exist.
+      var schemasCard = byId('ov-schemas-card');
+      if (!schemasCard && schemaCount) {
+        var cards = document.querySelector('.ov-cards');
+        if (cards) {
+          schemasCard = document.createElement('div');
+          schemasCard.id = 'ov-schemas-card';
+          schemasCard.className = 'ov-card';
+          schemasCard.innerHTML = '<b id="ov-schema-count">—</b><span>Schemas</span>';
+          cards.appendChild(schemasCard);
+        }
+      }
+      if (schemasCard) {
+        byId('ov-schema-count').textContent = schemaCount;
+      }
+
+      renderSchemas();
+    }
+
+    /** Swagger-style expandable model browser on the Overview page. */
+    function renderSchemas() {
+      var schemas = (spec.components && spec.components.schemas) || {};
+      var names = Object.keys(schemas).sort();
+      var host = byId('ov-schemas');
+      if (!names.length) { host.innerHTML = ''; return; }
+
+      host.innerHTML = '<h4 class="ov-schemas-title">Schemas <span class="tab-count">' + names.length + '</span></h4>' +
+        names.map(function (name) {
+          return '<div class="schema-item">' +
+            '<button type="button" class="schema-head"><span class="chev">▸</span>' + esc(name) + '</button>' +
+            '<div class="schema-body" hidden><div class="schema">' +
+              (schemaTree(schemas[name], 0) || '<span class="dim">No properties.</span>') +
+            '</div></div>' +
+          '</div>';
+        }).join('');
+
+      host.querySelectorAll('.schema-head').forEach(function (head) {
+        head.addEventListener('click', function () {
+          var body = head.nextElementSibling;
+          body.hidden = !body.hidden;
+          head.classList.toggle('open', !body.hidden);
+        });
+      });
+    }
+
+    /* ------------------------------------------------------------------ *
+     * Sidebar: Collections + History
+     * ------------------------------------------------------------------ */
+
+    document.querySelectorAll('.side-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        document.querySelectorAll('.side-tab').forEach(function (other) {
+          other.classList.toggle('active', other === tab);
+        });
+        byId('side-collections').hidden = tab.getAttribute('data-side') !== 'collections';
+        byId('side-history').hidden = tab.getAttribute('data-side') !== 'history';
+      });
+    });
+
+    function renderSidebar(groups) {
+      var nav = byId('side-collections');
+      nav.innerHTML = '';
+      Object.keys(groups).sort().forEach(function (tag, index) {
+        var group = el('<div class="group' + (index === 0 ? ' open' : '') + '">' +
+          '<button type="button" class="group-head">' +
+            '<span class="chev">▸</span>' +
+            '<span class="group-name">' + esc(tag) + '</span>' +
+            '<span class="group-count">' + groups[tag].length + '</span>' +
+          '</button>' +
+          '<div class="group-items"></div>' +
+        '</div>');
+
+        group.querySelector('.group-head').addEventListener('click', function () {
+          group.classList.toggle('open');
+        });
+
+        var itemsEl = group.querySelector('.group-items');
+        groups[tag].forEach(function (item) {
+          var a = el('<button type="button" class="nav-item" id="nav-' + item.id + '">' +
+            '<span class="method method-sm method-' + item.method + '">' + methodShort(item.method) + '</span>' +
+            '<span class="nav-text">' +
+              '<span class="nav-name">' + esc(item.op.summary || item.path) + '</span>' +
+              '<span class="nav-path">' + highlightPath(item.path) + '</span>' +
+            '</span>' +
+          '</button>');
+          a.setAttribute('data-search', (item.method + ' ' + item.path + ' ' + (item.op.summary || '') + ' ' + tag).toLowerCase());
+          a.addEventListener('click', function () { selectOperation(item); });
+          itemsEl.appendChild(a);
+        });
+
+        nav.appendChild(group);
+      });
+    }
+
+    function methodShort(m) {
+      if (m === 'delete') return 'DEL';
+      if (m === 'options') return 'OPT';
+      if (m === 'patch') return 'PAT';
+      return m.toUpperCase();
+    }
+
+    /* ---- History (persisted, Postman-style) ---- */
+
+    function getHistory() {
+      try { return JSON.parse(store('scramble-history') || '[]'); } catch (e) { return []; }
+    }
+
+    function pushHistory(entry) {
+      var history = getHistory();
+      history.unshift(entry);
+      if (history.length > 25) history.length = 25;
+      store('scramble-history', JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory() {
+      var history = getHistory();
+      var panel = byId('side-history');
+      var count = byId('history-count');
+      count.hidden = history.length === 0;
+      count.textContent = history.length;
+
+      if (!history.length) {
+        panel.innerHTML = '<div class="panel-empty">Requests you send will appear here.</div>';
+        return;
+      }
+
+      panel.innerHTML = '<button type="button" class="btn-add history-clear" id="clear-history">Clear history</button>';
+      history.forEach(function (entry) {
+        var cls = entry.status >= 200 && entry.status < 300 ? 'ok' : entry.status === 0 ? 'err' : entry.status >= 400 ? 'err' : 'other';
+        var row = el('<button type="button" class="nav-item history-item">' +
+          '<span class="method method-sm method-' + esc(entry.method) + '">' + methodShort(entry.method) + '</span>' +
+          '<span class="nav-text">' +
+            '<span class="nav-name">' + esc(entry.url) + '</span>' +
+            '<span class="nav-path">' +
+              '<span class="hist-status hist-' + cls + '">' + (entry.status || 'ERR') + '</span> · ' +
+              esc(entry.ms) + ' ms · ' + esc(entry.at) +
+            '</span>' +
+          '</span>' +
+        '</button>');
+        row.addEventListener('click', function () {
+          var item = opsById[entry.opId];
+          if (item) {
+            selectOperation(item);
+            byId('url-input').value = entry.url;
+          }
+        });
+        panel.appendChild(row);
+      });
+
+      byId('clear-history').addEventListener('click', function () {
+        store('scramble-history', '[]');
+        renderHistory();
+      });
+    }
+
+    /* ------------------------------------------------------------------ *
+     * Request view
+     * ------------------------------------------------------------------ */
+
+    function selectOperation(item) {
+      current = item;
+      try { history.replaceState(null, '', '#' + item.id); } catch (e) { /* ignore */ }
+
+      byId('overview-link').classList.remove('active');
+      var active = document.querySelector('.nav-item.active');
+      if (active) active.classList.remove('active');
+      var navEl = byId('nav-' + item.id);
+      if (navEl) {
+        navEl.classList.add('active');
+        var group = navEl.closest('.group');
+        if (group) group.classList.add('open');
+      }
+
+      byId('welcome').hidden = true;
+      byId('request-view').hidden = false;
+      byId('ws-view').hidden = true;
+      byId('gql-view').hidden = true;
+
+      byId('crumb-group').textContent = item.tag;
+      byId('crumb-name').textContent = item.op.summary || item.path;
+
+      var methodEl = byId('req-method');
+      methodEl.textContent = item.method.toUpperCase();
+      methodEl.className = 'method method-' + item.method;
+
+      byId('req-summary-text').textContent = item.op.summary || '';
+
+      var chips = '';
+      if (item.op.deprecated) chips += '<span class="chip chip-deprecated">deprecated</span>';
+      if (item.op.security && item.op.security.length) chips += '<span class="chip chip-auth">🔒 auth</span>';
+      byId('req-chips').innerHTML = chips;
+
+      var body = bodyInfo(item.op);
+      bodyMode = body.isMultipart ? 'form' : body.contentType ? 'raw' : 'none';
+      renderParamsPanel(item);
+      renderAuthPanel();
+      renderHeadersPanel();
+      renderBodyPanel(body);
+      renderDocsPanel(item, body);
+      resetResponse();
+      syncUrl();
+      activateTab(defaultTab(item, body));
+    }
+
+    function defaultTab(item, body) {
+      var params = item.op.parameters || [];
+      var hasParams = params.some(function (p) { return p.in === 'path' || p.in === 'query'; });
+      if (hasParams) return 'params';
+      if (body.contentType) return 'body';
+      return 'docs';
+    }
+
+    /* ---- Params panel: checkboxes, ghost rows, live URL sync ---- */
+
+    function checkCell(checked, disabled) {
+      return '<label class="kv-check-cell"><input type="checkbox" class="kv-check"' +
+        (checked ? ' checked' : '') + (disabled ? ' disabled' : '') + ' /></label>';
+    }
+
+    function renderParamsPanel(item) {
+      var params = (item.op.parameters || []).filter(function (p) {
+        return p.in === 'path' || p.in === 'query';
+      });
+      var panel = byId('panel-params');
+
+      var rows = params.map(function (prm) {
+        return '<div class="kv-row" data-kind="' + esc(prm.in) + '" data-name="' + esc(prm.name) + '">' +
+          checkCell(true, prm.in === 'path') +
+          '<span class="kv-key">' + esc(prm.name) + (prm.required ? '<i class="req">*</i>' : '') +
+            ' <span class="chip chip-' + esc(prm.in) + '">' + esc(prm.in) + '</span></span>' +
+          '<input class="kv-input" placeholder="' + esc(typeLabel(prm.schema || {}) || 'value') + '" />' +
+          '<span class="kv-desc">' + esc(prm.description || constraintsLabel(prm.schema || {})) + '</span>' +
+        '</div>';
+      }).join('');
+
+      panel.innerHTML = '<div class="kv-table" id="params-table">' +
+        '<div class="kv-row kv-header-row">' +
+          '<span class="kv-check-cell"></span>' +
+          '<span class="kv-head">Key</span><span class="kv-head">Value</span><span class="kv-head">Description</span>' +
+        '</div>' +
+        rows +
+      '</div>';
+
+      appendGhostRow(byId('params-table'), 'query');
+    }
+
+    /** A Postman-style empty row: typing into it turns it into a real row. */
+    function appendGhostRow(table, kind) {
+      var ghost = el('<div class="kv-row kv-ghost" data-kind="' + kind + '">' +
+        checkCell(false, true) +
+        '<input class="kv-input kv-custom-key" placeholder="Key" />' +
+        '<input class="kv-input kv-custom-value" placeholder="Value" />' +
+        '<span class="kv-desc dim"></span>' +
+      '</div>');
+
+      var materialised = false;
+      ghost.querySelectorAll('input[type=text], input:not([type])').forEach(function (input) {
+        input.addEventListener('input', function () {
+          if (materialised) return;
+          materialised = true;
+          ghost.classList.remove('kv-ghost');
+          var check = ghost.querySelector('.kv-check');
+          check.disabled = false;
+          check.checked = true;
+          appendGhostRow(table, kind);
+        });
+      });
+
+      table.appendChild(ghost);
+    }
+
+    function onParamsChanged() {
+      syncUrl();
+      updateDots();
+    }
+
+    /** Rebuilds the URL bar from the params table — the Postman behaviour. */
+    function syncUrl() {
+      if (!current) return;
+      var url = current.path;
+      var query = [];
+
+      document.querySelectorAll('#params-table .kv-row').forEach(function (row) {
+        if (row.classList.contains('kv-header-row')) return;
+        var check = row.querySelector('.kv-check');
+        if (!check || !check.checked) return;
+
+        var kind = row.getAttribute('data-kind');
+        var name = row.getAttribute('data-name');
+        var value;
+        if (name) {
+          value = row.querySelector('.kv-input').value;
+        } else {
+          var keyInput = row.querySelector('.kv-custom-key');
+          var valueInput = row.querySelector('.kv-custom-value');
+          if (!keyInput || !keyInput.value) return;
+          name = keyInput.value;
+          value = valueInput ? valueInput.value : '';
+          kind = 'query';
+        }
+
+        if (kind === 'path') {
+          if (value) url = url.replace('{' + name + '}', encodeURIComponent(value));
+        } else if (value !== '') {
+          query.push(encodeURIComponent(name) + '=' + encodeURIComponent(value));
+        }
+      });
+
+      byId('url-input').value = url + (query.length ? '?' + query.join('&') : '');
+    }
+
+    function updateDots() {
+      var hasValue = false;
+      document.querySelectorAll('#params-table .kv-input').forEach(function (input) {
+        if (input.value) hasValue = true;
+      });
+      byId('dot-params').hidden = !hasValue;
+    }
+
+    byId('panel-params').addEventListener('input', onParamsChanged);
+    byId('panel-params').addEventListener('change', onParamsChanged);
+
+    /* ---- Auth panel (per request, inherits from global) ---- */
+
+    function localAuth() {
+      return reqAuth[current.id] || { mode: 'inherit', token: '', header: '' };
+    }
+
+    function effectiveAuth() {
+      var local = localAuth();
+      if (local.mode !== 'inherit') return local;
+      var g = getAuth();
+      if (g.type === 'bearer' || g.type === 'apikey') {
+        return { mode: g.type, token: g.token || '', header: g.header || '' };
+      }
+      return { mode: 'none' };
+    }
+
+    function applyEffectiveAuth(headers) {
+      var auth = effectiveAuth();
+      var token = (auth.token || '').trim();
+      if (auth.mode === 'bearer' && token) headers['Authorization'] = 'Bearer ' + token;
+      if (auth.mode === 'apikey' && token) headers[(auth.header || 'X-API-Key').trim()] = token;
+      return headers;
+    }
+
+    function renderAuthPanel() {
+      var local = localAuth();
+      var effective = effectiveAuth();
+      var panel = byId('panel-auth');
+
+      var preview = (effective.token || '').trim();
+      preview = preview ? esc(preview.length > 14 ? preview.slice(0, 14) + '…' : preview) : '(empty)';
+      var summary = effective.mode === 'none'
+        ? '<span class="dim">No authorization will be sent.</span>'
+        : effective.mode === 'bearer'
+          ? '<span class="chip chip-auth">Authorization: Bearer ' + preview + '</span>'
+          : '<span class="chip chip-auth">' + esc(effective.header || 'X-API-Key') + ': ' + preview + '</span>';
+
+      panel.innerHTML =
+        '<div class="auth-grid">' +
+          '<label class="auth-field"><span>Auth type</span>' +
+            '<select id="req-auth-mode">' +
+              '<option value="inherit"' + (local.mode === 'inherit' ? ' selected' : '') + '>Inherit from global 🔑</option>' +
+              '<option value="none"' + (local.mode === 'none' ? ' selected' : '') + '>No auth</option>' +
+              '<option value="bearer"' + (local.mode === 'bearer' ? ' selected' : '') + '>Bearer token</option>' +
+              '<option value="apikey"' + (local.mode === 'apikey' ? ' selected' : '') + '>API key header</option>' +
+            '</select>' +
+          '</label>' +
+          '<label class="auth-field" id="req-auth-header-row"' + (local.mode === 'apikey' ? '' : ' hidden') + '><span>Header</span>' +
+            '<input id="req-auth-header" placeholder="X-API-Key" value="' + esc(local.header || '') + '" />' +
+          '</label>' +
+          '<label class="auth-field" id="req-auth-token-row"' + (local.mode === 'bearer' || local.mode === 'apikey' ? '' : ' hidden') + '><span>Value</span>' +
+            '<input id="req-auth-token" placeholder="token…" value="' + esc(local.token || '') + '" />' +
+          '</label>' +
+        '</div>' +
+        '<div class="auth-summary">Effective: ' + summary + '</div>';
+
+      function persist() {
+        reqAuth[current.id] = {
+          mode: byId('req-auth-mode').value,
+          token: byId('req-auth-token') ? byId('req-auth-token').value : '',
+          header: byId('req-auth-header') ? byId('req-auth-header').value : '',
+        };
+        renderAuthPanel();
+        renderHeadersPanel();
+      }
+
+      byId('req-auth-mode').addEventListener('change', persist);
+      byId('req-auth-token').addEventListener('input', function () {
+        reqAuth[current.id] = { mode: byId('req-auth-mode').value, token: this.value, header: byId('req-auth-header').value };
+        byId('dot-auth').hidden = !this.value;
+      });
+      byId('req-auth-token').addEventListener('change', function () {
+        renderAuthPanel();
+        renderHeadersPanel();
+      });
+      byId('req-auth-header').addEventListener('input', function () {
+        reqAuth[current.id] = { mode: byId('req-auth-mode').value, token: byId('req-auth-token').value, header: this.value };
+      });
+
+      byId('dot-auth').hidden = localAuth().mode === 'inherit' || localAuth().mode === 'none';
+    }
+
+    /* ---- Headers panel: auto rows + spec rows + ghost rows ---- */
+
+    function renderHeadersPanel() {
+      if (!current) return;
+      var body = bodyInfo(current.op);
+      var headers = (current.op.parameters || []).filter(function (p) { return p.in === 'header'; });
+      var panel = byId('panel-headers');
+      var auth = effectiveAuth();
+
+      var autoRows = '';
+      var autoCount = 0;
+      if (bodyMode === 'raw' && body.contentType) {
+        autoCount++;
+        autoRows += '<div class="kv-row kv-auto">' + checkCell(true, true) +
+          '<span class="kv-key">Content-Type</span>' +
+          '<span class="kv-fixed">' + esc(body.contentType) + '</span>' +
+          '<span class="kv-desc">auto — from request body</span></div>';
+      }
+      if (bodyMode === 'form') {
+        autoCount++;
+        autoRows += '<div class="kv-row kv-auto">' + checkCell(true, true) +
+          '<span class="kv-key">Content-Type</span>' +
+          '<span class="kv-fixed">multipart/form-data; boundary=…</span>' +
+          '<span class="kv-desc">auto — set by the browser</span></div>';
+      }
+      if (auth.mode === 'bearer' && auth.token) {
+        autoCount++;
+        autoRows += '<div class="kv-row kv-auto">' + checkCell(true, true) +
+          '<span class="kv-key">Authorization</span>' +
+          '<span class="kv-fixed">Bearer ' + esc(auth.token.length > 18 ? auth.token.slice(0, 18) + '…' : auth.token) + '</span>' +
+          '<span class="kv-desc">auto — from Auth tab</span></div>';
+      }
+      if (auth.mode === 'apikey' && auth.token) {
+        autoCount++;
+        autoRows += '<div class="kv-row kv-auto">' + checkCell(true, true) +
+          '<span class="kv-key">' + esc(auth.header || 'X-API-Key') + '</span>' +
+          '<span class="kv-fixed">' + esc(auth.token.length > 18 ? auth.token.slice(0, 18) + '…' : auth.token) + '</span>' +
+          '<span class="kv-desc">auto — from Auth tab</span></div>';
+      }
+
+      var specRows = headers.map(function (prm) {
+        return '<div class="kv-row" data-kind="header" data-name="' + esc(prm.name) + '">' +
+          checkCell(true, false) +
+          '<span class="kv-key">' + esc(prm.name) + (prm.required ? '<i class="req">*</i>' : '') + '</span>' +
+          '<input class="kv-input" placeholder="' + esc(typeLabel(prm.schema || {}) || 'value') + '" />' +
+          '<span class="kv-desc">' + esc(prm.description || '') + '</span>' +
+        '</div>';
+      }).join('');
+
+      var countEl = byId('count-headers');
+      var total = autoCount + headers.length;
+      countEl.hidden = total === 0;
+      countEl.textContent = total;
+
+      panel.innerHTML =
+        (autoCount ? '<div class="hidden-note dim">' + autoCount + ' auto-generated</div>' : '') +
+        '<div class="kv-table" id="headers-table">' +
+        '<div class="kv-row kv-header-row">' +
+          '<span class="kv-check-cell"></span>' +
+          '<span class="kv-head">Key</span><span class="kv-head">Value</span><span class="kv-head">Description</span>' +
+        '</div>' +
+        autoRows + specRows +
+      '</div>';
+
+      appendGhostRow(byId('headers-table'), 'header');
+    }
+
+    /* ---- Body panel: mode selector (none / form-data / raw JSON) ---- */
+
+    /** Flattens a multipart schema into rows the form-data table can render. */
+    function formFieldsOf(schema) {
+      var props = (schema && schema.properties) || {};
+      var required = (schema && schema.required) || [];
+      return Object.keys(props).map(function (name) {
+        var p = props[name] || {};
+        var isFile = p.format === 'binary' ||
+          (p.type === 'array' && p.items && p.items.format === 'binary');
+        return {
+          name: name,
+          isFile: isFile,
+          multiple: p.type === 'array',
+          required: required.indexOf(name) !== -1,
+          description: p.description || (p.maxItems ? 'up to ' + p.maxItems + ' files' : ''),
+          schema: p,
+        };
+      });
+    }
+
+    function renderBodyPanel(body) {
+      var panel = byId('panel-body');
+      var fields = body.isMultipart ? formFieldsOf(body.schema) : [];
+
+      var fieldRows = fields.map(function (f) {
+        var control;
+        if (f.isFile) {
+          control =
+            '<span class="file-cell">' +
+              '<select class="file-src" aria-label="File source">' +
+                '<option value="file">File</option>' +
+                '<option value="url">URL</option>' +
+                '<option value="base64">Base64</option>' +
+              '</select>' +
+              '<input type="file" class="file-input" id="file-' + esc(f.name) + '"' + (f.multiple ? ' multiple' : '') + ' hidden />' +
+              '<button type="button" class="btn-add file-btn" data-for="file-' + esc(f.name) + '">Select file' + (f.multiple ? 's' : '') + '</button>' +
+              '<span class="file-names dim">No file selected</span>' +
+              '<input class="kv-input file-url" placeholder="https://example.com/image.png" hidden />' +
+              '<textarea class="kv-input file-b64" rows="2" spellcheck="false" placeholder="data:image/png;base64,… or raw base64" hidden></textarea>' +
+            '</span>';
+        } else {
+          control = '<input class="kv-input" placeholder="' + esc(typeLabel(f.schema) || 'value') + '" />';
+        }
+        return '<div class="kv-row" data-name="' + esc(f.name) + '"' + (f.isFile ? ' data-file="1"' : '') + '>' +
+          checkCell(true, false) +
+          '<span class="kv-key">' + esc(f.name) + (f.required ? '<i class="req">*</i>' : '') +
+            (f.isFile ? ' <span class="chip chip-filetag">file</span>' : '') + '</span>' +
+          control +
+          '<span class="kv-desc">' + esc(f.description) + '</span>' +
+        '</div>';
+      }).join('');
+
+      panel.innerHTML =
+        '<div class="body-bar" role="radiogroup" aria-label="Body mode">' +
+          '<label class="body-mode"><input type="radio" name="body-mode" value="none"' + (bodyMode === 'none' ? ' checked' : '') + ' /> none</label>' +
+          (body.isMultipart
+            ? '<label class="body-mode"><input type="radio" name="body-mode" value="form"' + (bodyMode === 'form' ? ' checked' : '') + ' /> form-data</label>'
+            : '') +
+          '<label class="body-mode"><input type="radio" name="body-mode" value="raw"' + (bodyMode === 'raw' ? ' checked' : '') + ' /> raw</label>' +
+          '<select class="raw-lang" id="raw-lang"' + (bodyMode === 'raw' ? '' : ' hidden') + '><option>JSON</option></select>' +
+          '<span class="chip">' + esc(body.contentType || 'application/json') + '</span>' +
+          '<span class="chip" id="json-valid" hidden></span>' +
+          '<button type="button" class="btn-add" id="beautify-body"' + (bodyMode === 'raw' ? '' : ' hidden') + '>Beautify</button>' +
+        '</div>' +
+        '<div class="kv-table form-table" id="form-table"' + (bodyMode === 'form' ? '' : ' hidden') + '>' +
+          '<div class="kv-row kv-header-row">' +
+            '<span class="kv-check-cell"></span>' +
+            '<span class="kv-head">Key</span><span class="kv-head">Value</span><span class="kv-head">Description</span>' +
+          '</div>' +
+          fieldRows +
+        '</div>' +
+        '<div class="editor-wrap" id="editor-wrap"' + (bodyMode === 'raw' ? '' : ' hidden') + '>' +
+          '<pre class="body-highlight" id="body-highlight" aria-hidden="true"></pre>' +
+          '<textarea class="body-editor" id="body-editor" rows="12" spellcheck="false">' +
+            esc(body.example !== null ? JSON.stringify(body.example, null, 2) : '') +
+          '</textarea>' +
+        '</div>' +
+        '<div class="panel-empty" id="body-none-note"' + (bodyMode === 'none' ? '' : ' hidden') + '>This request has no body.</div>';
+
+      panel.querySelectorAll('input[name=body-mode]').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+          bodyMode = this.value;
+          byId('editor-wrap').hidden = bodyMode !== 'raw';
+          byId('beautify-body').hidden = bodyMode !== 'raw';
+          byId('raw-lang').hidden = bodyMode !== 'raw';
+          var form = byId('form-table');
+          if (form) form.hidden = bodyMode !== 'form';
+          var note = byId('body-none-note');
+          if (note) note.hidden = bodyMode !== 'none';
+          validateBody();
+          renderHeadersPanel();
+        });
+      });
+
+      panel.querySelectorAll('.file-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          byId(btn.getAttribute('data-for')).click();
+        });
+      });
+
+      panel.querySelectorAll('.file-input').forEach(function (input) {
+        input.addEventListener('change', function () {
+          var row = input.closest('.kv-row');
+          var label = row.querySelector('.file-names');
+          if (!input.files.length) {
+            label.textContent = 'No file selected';
+            label.classList.add('dim');
+            return;
+          }
+          var names = [];
+          var total = 0;
+          for (var i = 0; i < input.files.length; i++) {
+            names.push(input.files[i].name);
+            total += input.files[i].size;
+          }
+          label.textContent = names.join(', ') + ' · ' + formatSize(total);
+          label.classList.remove('dim');
+          var check = row.querySelector('.kv-check');
+          if (check) check.checked = true;
+        });
+      });
+
+      panel.querySelectorAll('.file-src').forEach(function (sel) {
+        sel.addEventListener('change', function () {
+          var cell = sel.closest('.file-cell');
+          cell.querySelector('.file-btn').hidden = sel.value !== 'file';
+          cell.querySelector('.file-names').hidden = sel.value !== 'file';
+          cell.querySelector('.file-url').hidden = sel.value !== 'url';
+          cell.querySelector('.file-b64').hidden = sel.value !== 'base64';
+        });
+      });
+
+      panel.querySelectorAll('.file-url, .file-b64').forEach(function (input) {
+        input.addEventListener('input', function () {
+          var check = input.closest('.kv-row').querySelector('.kv-check');
+          if (check) check.checked = !!input.value.trim();
+        });
+      });
+
+      if (body.isMultipart) appendGhostRow(byId('form-table'), 'form');
+
+      // The textarea itself is transparent; this keeps the highlight layer
+      // underneath it in sync so the raw body gets full JSON colouring.
+      function syncHighlight() {
+        var editor = byId('body-editor');
+        var hl = byId('body-highlight');
+        if (!editor || !hl) return;
+        hl.innerHTML = hljson(editor.value) + '\n';
+        hl.scrollTop = editor.scrollTop;
+        hl.scrollLeft = editor.scrollLeft;
+      }
+
+      byId('beautify-body').addEventListener('click', function () {
+        var editor = byId('body-editor');
+        try { editor.value = JSON.stringify(JSON.parse(editor.value), null, 2); } catch (e) { /* leave as-is */ }
+        validateBody();
+        syncHighlight();
+      });
+
+      byId('body-editor').addEventListener('input', function () {
+        validateBody();
+        syncHighlight();
+      });
+      byId('body-editor').addEventListener('scroll', syncHighlight);
+      validateBody();
+      syncHighlight();
+    }
+
+    /** Live JSON validity badge for the raw body editor. */
+    function validateBody() {
+      var badge = byId('json-valid');
+      var editor = byId('body-editor');
+      if (!badge || !editor) return;
+      var text = editor.value.trim();
+      if (bodyMode !== 'raw' || !text) { badge.hidden = true; return; }
+      badge.hidden = false;
+      try {
+        JSON.parse(text);
+        badge.className = 'chip chip-ok';
+        badge.textContent = 'JSON ✓';
+      } catch (e) {
+        badge.className = 'chip chip-err';
+        badge.textContent = 'Invalid JSON';
+      }
+    }
+
+    function renderDocsPanel(item, body) {
+      var op = item.op;
+      var html = '';
+
+      if (op.description) html += '<p class="dim">' + esc(op.description) + '</p>';
+
+      if (body.schema) {
+        var tree = schemaTree(body.schema, 0);
+        if (tree) html += '<h4>Request body schema</h4><div class="schema">' + tree + '</div>';
+      }
+
+      var responses = op.responses || {};
+      var codes = Object.keys(responses);
+      if (codes.length) {
+        html += '<h4>Responses</h4>';
+        html += codes.map(function (code) {
+          var r = responses[code] || {};
+          var cls = code[0] === '2' ? 'ok' : code[0] === '4' || code[0] === '5' ? 'err' : 'other';
+          var block = '';
+          if (r.content && r.content['application/json']) {
+            var example = exampleOf(r.content['application/json'].schema || {}, 0);
+            if (example !== null) {
+              block = '<pre class="code">' + hljson(JSON.stringify(example, null, 2)) + '</pre>';
+            }
+          }
+          return '<div class="response-doc"><span class="status status-' + cls + '">' + esc(code) + '</span>' +
+            '<span class="dim">' + esc(r.description || '') + '</span>' + block + '</div>';
+        }).join('');
+      }
+
+      byId('panel-docs').innerHTML = html || '<div class="panel-empty">No additional documentation.</div>';
+    }
+
+    /* ------------------------------------------------------------------ *
+     * Tabs
+     * ------------------------------------------------------------------ */
+
+    function activateTab(name) {
+      document.querySelectorAll('.tab').forEach(function (tab) {
+        tab.classList.toggle('active', tab.getAttribute('data-tab') === name);
+      });
+      document.querySelectorAll('.panel').forEach(function (panel) {
+        panel.hidden = panel.getAttribute('data-panel') !== name;
+      });
+      if (name === 'code') renderCodePanel();
+    }
+
+    byId('tabs').addEventListener('click', function (event) {
+      var tab = event.target.closest('.tab');
+      if (tab) activateTab(tab.getAttribute('data-tab'));
+    });
+
+    /* ------------------------------------------------------------------ *
+     * Request assembly (shared by Send and the Code tab)
+     * ------------------------------------------------------------------ */
+
+    function collectRequest() {
+      var headers = {};
+
+      document.querySelectorAll('#headers-table .kv-row').forEach(function (row) {
+        if (row.classList.contains('kv-header-row') || row.classList.contains('kv-auto')) return;
+        var check = row.querySelector('.kv-check');
+        if (!check || !check.checked) return;
+        var name = row.getAttribute('data-name');
+        if (name) {
+          var input = row.querySelector('.kv-input');
+          if (input && input.value) headers[name] = input.value;
+        } else {
+          var keyInput = row.querySelector('.kv-custom-key');
+          var valueInput = row.querySelector('.kv-custom-value');
+          if (keyInput && keyInput.value && valueInput && valueInput.value) {
+            headers[keyInput.value] = valueInput.value;
+          }
+        }
+      });
+
+      applyEffectiveAuth(headers);
+
+      var body = null;
+      var form = null;
+      var bodyEditor = byId('body-editor');
+      if (bodyMode === 'raw' && bodyEditor && !bodyEditor.hidden && bodyEditor.value.trim()) {
+        body = bodyEditor.value;
+        headers['Content-Type'] = bodyInfo(current.op).contentType || 'application/json';
+      } else if (bodyMode === 'form') {
+        // Content-Type is deliberately NOT set here: the browser generates
+        // the multipart boundary itself, and a manual value would break it.
+        form = [];
+        document.querySelectorAll('#form-table .kv-row').forEach(function (row) {
+          if (row.classList.contains('kv-header-row')) return;
+          var check = row.querySelector('.kv-check');
+          if (!check || !check.checked) return;
+          var fileInput = row.querySelector('.file-input');
+          if (fileInput) {
+            var key = row.getAttribute('data-name');
+            var srcSel = row.querySelector('.file-src');
+            var mode = srcSel ? srcSel.value : 'file';
+            if (mode === 'file' && fileInput.files.length) {
+              form.push({ key: key, files: Array.prototype.slice.call(fileInput.files) });
+            } else if (mode === 'url') {
+              var urlInput = row.querySelector('.file-url');
+              if (urlInput && urlInput.value.trim()) form.push({ key: key, url: applyVars(urlInput.value.trim()) });
+            } else if (mode === 'base64') {
+              var b64Input = row.querySelector('.file-b64');
+              if (b64Input && b64Input.value.trim()) form.push({ key: key, base64: b64Input.value.trim() });
+            }
+            return;
+          }
+          var name = row.getAttribute('data-name');
+          if (name) {
+            var input = row.querySelector('.kv-input');
+            if (input && input.value) form.push({ key: name, value: applyVars(input.value) });
+          } else {
+            var keyInput = row.querySelector('.kv-custom-key');
+            var valueInput = row.querySelector('.kv-custom-value');
+            if (keyInput && keyInput.value && valueInput && valueInput.value) {
+              form.push({ key: keyInput.value, value: applyVars(valueInput.value) });
+            }
+          }
+        });
+      }
+
+      // Relative URLs are fetched against the page origin, which is always
+      // the app serving these docs — works behind proxies and tunnels too.
+      // An active environment can override the base URL and fill variables.
+      var url = applyVars(byId('url-input').value);
+      var env = activeEnv();
+      var specBase = spec && spec.servers && spec.servers[0] && spec.servers[0].url;
+      var base = (env && env.baseUrl) || specBase || location.origin;
+      if (base && url.indexOf('http') !== 0) {
+        url = base.replace(/\/+$/, '') + url;
+      }
+      Object.keys(headers).forEach(function (key) { headers[key] = applyVars(headers[key]); });
+      if (body && typeof body === 'string') body = applyVars(body);
+      // url is what snippets and history show; fetchUrl is what we call —
+      // routed through the standalone docs server's proxy when it offers one,
+      // so a backend without CORS still answers.
+      return { url: url, fetchUrl: viaProxy(url), headers: headers, body: body, form: form };
+    }
+
+    function viaProxy(url) {
+      var proxy = spec && spec['x-scramble-proxy'];
+      var specBase = spec && spec.servers && spec.servers[0] && spec.servers[0].url;
+      var env = activeEnv();
+      if (!proxy || !specBase || (env && env.baseUrl)) return url;
+      var normalized = specBase.replace(/\/+$/, '');
+      if (url.indexOf(normalized) !== 0) return url;
+      return location.origin + proxy + url.slice(normalized.length);
+    }
+
+    /** Best-effort filename for a blob downloaded from a URL. */
+    function fileNameFromUrl(u) {
+      try {
+        var name = new URL(u, location.href).pathname.split('/').pop();
+        return name || 'file';
+      } catch (e) { return 'file'; }
+    }
+
+    /**
+     * Assembles the multipart payload. Async because URL sources are fetched
+     * and base64 sources are decoded through a data-URL fetch, which also
+     * validates the encoding.
+     */
+    function buildFormData(form) {
+      var fd = new FormData();
+      var any = false;
+      var jobs = form.map(function (entry) {
+        if (entry.files) {
+          entry.files.forEach(function (file) { fd.append(entry.key, file); any = true; });
+          return Promise.resolve();
+        }
+        if (entry.url) {
+          return fetch(entry.url).then(function (res) {
+            if (!res.ok) throw new Error('Could not download ' + entry.url + ' (HTTP ' + res.status + ')');
+            return res.blob();
+          }).then(function (blob) {
+            fd.append(entry.key, blob, fileNameFromUrl(entry.url));
+            any = true;
+          });
+        }
+        if (entry.base64 !== undefined) {
+          var data = entry.base64.indexOf('data:') === 0
+            ? entry.base64
+            : 'data:application/octet-stream;base64,' + entry.base64.replace(/\s+/g, '');
+          return fetch(data).then(function (res) { return res.blob(); }).then(function (blob) {
+            var ext = (blob.type.split('/')[1] || 'bin').split('+')[0];
+            fd.append(entry.key, blob, 'file.' + ext);
+            any = true;
+          }).catch(function () {
+            throw new Error('Invalid base64 for field "' + entry.key + '"');
+          });
+        }
+        fd.append(entry.key, entry.value);
+        any = true;
+        return Promise.resolve();
+      });
+      return Promise.all(jobs).then(function () { return any ? fd : null; });
+    }
+
+    /* ------------------------------------------------------------------ *
+     * Code snippets (cURL / fetch / axios)
+     * ------------------------------------------------------------------ */
+
+    function absolute(url) {
+      if (url.indexOf('http') === 0) return url;
+      var env = activeEnv();
+      var base = (env && env.baseUrl) ||
+        (spec && spec.servers && spec.servers[0] && spec.servers[0].url) || location.origin;
+      if (base.charAt(base.length - 1) === '/') base = base.slice(0, -1);
+      return base + url;
+    }
+
+    function snippetCurl(req, method) {
+      var lines = ["curl -X " + method + " '" + absolute(req.url) + "'"];
+      Object.keys(req.headers).forEach(function (key) {
+        lines.push("  -H '" + key + ": " + req.headers[key] + "'");
+      });
+      if (req.form) {
+        req.form.forEach(function (entry) {
+          if (entry.files) {
+            entry.files.forEach(function (file) {
+              lines.push("  -F '" + entry.key + '=@"' + file.name + '"' + "'");
+            });
+          } else if (entry.url) {
+            lines.push("  -F '" + entry.key + '=@"' + fileNameFromUrl(entry.url) + '"' + "'");
+          } else if (entry.base64 !== undefined) {
+            lines.push("  -F '" + entry.key + '=@"file.bin"' + "'");
+          } else {
+            lines.push("  -F '" + entry.key + '=' + entry.value + "'");
+          }
+        });
+      } else if (req.body && typeof req.body === 'string') {
+        lines.push("  -d '" + req.body.replace(/'/g, "'\\''") + "'");
+      }
+      return lines.join(' \\\n');
+    }
+
+    /** Shared FormData construction lines for the fetch and axios snippets. */
+    function formDataLines(form) {
+      var lines = ['const formData = new FormData();'];
+      form.forEach(function (entry) {
+        if (entry.files) {
+          entry.files.forEach(function (file, index) {
+            lines.push("formData.append('" + entry.key + "', fileInput.files[" + index + ']); // ' + file.name);
+          });
+        } else if (entry.url) {
+          lines.push("formData.append('" + entry.key + "', await (await fetch('" + entry.url + "')).blob(), '" + fileNameFromUrl(entry.url) + "');");
+        } else if (entry.base64 !== undefined) {
+          lines.push("formData.append('" + entry.key + "', await (await fetch(base64DataUrl)).blob()); // decode your base64 data URL");
+        } else {
+          lines.push("formData.append('" + entry.key + "', '" + entry.value + "');");
+        }
+      });
+      return lines;
+    }
+
+    function snippetFetch(req, method) {
+      if (req.form) {
+        var headerPart = Object.keys(req.headers).length
+          ? '  headers: ' + JSON.stringify(req.headers, null, 2).replace(/\n/g, '\n  ') + ',\n'
+          : '';
+        return formDataLines(req.form).join('\n') + '\n\n' +
+          "const response = await fetch('" + absolute(req.url) + "', {\n" +
+          "  method: '" + method + "',\n" + headerPart +
+          '  body: formData,\n});\n' +
+          'const data = await response.json();\nconsole.log(data);';
+      }
+      var opts = { method: method };
+      if (Object.keys(req.headers).length) opts.headers = req.headers;
+      var optsJson = JSON.stringify(opts, null, 2);
+      if (req.body && typeof req.body === 'string') {
+        optsJson = optsJson.replace(/\n}$/, ',\n  "body": JSON.stringify(' + req.body.replace(/\n/g, '\n  ') + ')\n}');
+      }
+      return "const response = await fetch('" + absolute(req.url) + "', " + optsJson + ');\n' +
+        'const data = await response.json();\nconsole.log(data);';
+    }
+
+    function snippetAxios(req, method) {
+      var config = '';
+      if (Object.keys(req.headers).length) {
+        config = ', {\n  headers: ' + JSON.stringify(req.headers, null, 2).replace(/\n/g, '\n  ') + '\n}';
+      }
+      var m = method.toLowerCase();
+      if (req.form && m !== 'get' && m !== 'delete' && m !== 'head' && m !== 'options') {
+        return formDataLines(req.form).join('\n') + '\n\n' +
+          "const { data } = await axios." + m + "('" + absolute(req.url) + "', formData" + config + ');\nconsole.log(data);';
+      }
+      var dataArg = req.body && typeof req.body === 'string' ? ', ' + req.body.replace(/\n/g, '\n') : '';
+      if (m === 'get' || m === 'delete' || m === 'head' || m === 'options') {
+        return "const { data } = await axios." + m + "('" + absolute(req.url) + "'" + config + ');\nconsole.log(data);';
+      }
+      return "const { data } = await axios." + m + "('" + absolute(req.url) + "'" + dataArg + config + ');\nconsole.log(data);';
+    }
+
+    function renderCodePanel() {
+      if (!current) return;
+      var req = collectRequest();
+      var method = current.method.toUpperCase();
+      var lang = byId('code-lang').value;
+      var text = lang === 'curl' ? snippetCurl(req, method)
+        : lang === 'fetch' ? snippetFetch(req, method)
+        : snippetAxios(req, method);
+      byId('code-snippet').textContent = text;
+    }
+
+    byId('code-lang').addEventListener('change', renderCodePanel);
+    byId('copy-code').addEventListener('click', function () {
+      copyText(byId('code-snippet').textContent, byId('copy-code'));
+    });
+
+    /* ------------------------------------------------------------------ *
+     * Send + response viewer
+     * ------------------------------------------------------------------ */
+
+    var lastResponseText = '';
+
+    function resetResponse() {
+      byId('resp-meta').innerHTML = '';
+      byId('resp-body').innerHTML = '<div class="resp-empty">Hit <b>Send</b> to see the response here.</div>';
+      byId('resp-headers').innerHTML = '';
+      byId('copy-resp').hidden = true;
+      byId('dl-resp').hidden = true;
+      lastResponseText = '';
+      activateRespTab('body');
+    }
+
+    function activateRespTab(name) {
+      document.querySelectorAll('.rtab').forEach(function (tab) {
+        tab.classList.toggle('active', tab.getAttribute('data-rtab') === name);
+      });
+      // Scoped to the REST view: the WS events log and the GraphQL response
+      // are .resp-panel too, and the global selector used to hide them for
+      // good the moment any REST request was opened.
+      document.querySelectorAll('#request-view .resp-panel').forEach(function (panel) {
+        panel.hidden = panel.getAttribute('data-rpanel') !== name;
+      });
+    }
+
+    document.querySelectorAll('.rtab').forEach(function (tab) {
+      tab.addEventListener('click', function () { activateRespTab(tab.getAttribute('data-rtab')); });
+    });
+
+    byId('copy-resp').addEventListener('click', function () {
+      copyText(lastResponseText, byId('copy-resp'));
+    });
+
+    byId('dl-resp').addEventListener('click', function () {
+      var blob = new Blob([lastResponseText], { type: 'application/json' });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'response.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    });
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      return (bytes / 1024).toFixed(1) + ' KB';
+    }
+
+    function send() {
+      if (!current) return;
+      var req = collectRequest();
+
+      var metaEl = byId('resp-meta');
+      var bodyEl = byId('resp-body');
+      metaEl.innerHTML = '<span class="dim">Sending…</span>';
+      bodyEl.innerHTML = '';
+      var started = performance.now();
+      var sendBtn = byId('send-btn');
+      sendBtn.classList.add('loading');
+      sendBtn.textContent = 'Sending';
+      function restoreSend() {
+        sendBtn.classList.remove('loading');
+        sendBtn.textContent = 'Send';
+      }
+
+      var payload = req.form ? buildFormData(req.form) : Promise.resolve(req.body);
+      payload.then(function (bodyPayload) {
+        var init = { method: current.method.toUpperCase(), headers: req.headers };
+        if (bodyPayload) init.body = bodyPayload;
+        return fetch(req.fetchUrl || req.url, init);
+      }).then(function (res) {
+        return res.text().then(function (text) {
+          restoreSend();
+          var ms = Math.round(performance.now() - started);
+          var pretty = text;
+          var isJson = false;
+          try { pretty = JSON.stringify(JSON.parse(text), null, 2); isJson = true; } catch (e) { /* not JSON */ }
+          lastResponseText = pretty;
+          var cls = res.ok ? 'ok' : 'err';
+          metaEl.innerHTML =
+            '<span class="status status-' + cls + '">' + res.status + ' ' + esc(res.statusText) + '</span>' +
+            '<span class="meta-item">' + ms + ' ms</span>' +
+            '<span class="meta-item">' + formatSize(text.length) + '</span>';
+          bodyEl.innerHTML = '<pre class="code resp-code">' + (isJson ? hljson(pretty) : esc(pretty)) + '</pre>';
+
+          var headerRows = '';
+          res.headers.forEach(function (value, key) {
+            headerRows += '<div class="kv-row"><span class="kv-key">' + esc(key) + '</span>' +
+              '<span class="kv-fixed">' + esc(value) + '</span></div>';
+          });
+          byId('resp-headers').innerHTML = headerRows
+            ? '<div class="kv-table kv-resp">' + headerRows + '</div>'
+            : '<div class="resp-empty">No headers exposed.</div>';
+
+          byId('copy-resp').hidden = false;
+          byId('dl-resp').hidden = false;
+          if (res.ok && isJson) captureToken(text);
+          pushHistory({
+            opId: current.id, method: current.method, url: req.url,
+            status: res.status, ms: ms, at: new Date().toLocaleTimeString(),
+          });
+        });
+      }).catch(function (err) {
+        restoreSend();
+        var ms = Math.round(performance.now() - started);
+        metaEl.innerHTML = '<span class="status status-err">failed</span>';
+        bodyEl.innerHTML = '<pre class="code resp-code">' + esc(String(err)) + '</pre>';
+        pushHistory({
+          opId: current.id, method: current.method, url: req.url,
+          status: 0, ms: ms, at: new Date().toLocaleTimeString(),
+        });
+      });
+    }
+
+    byId('send-btn').addEventListener('click', send);
+    document.addEventListener('keydown', function (event) {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') send();
+    });
+
+    /* ------------------------------------------------------------------ *
+     * Share links — request state encoded in the URL hash, no server needed
+     * ------------------------------------------------------------------ */
+
+    function encodeShare(state) {
+      return btoa(unescape(encodeURIComponent(JSON.stringify(state))))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+    }
+
+    function decodeShare(encoded) {
+      try {
+        var b64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(decodeURIComponent(escape(atob(b64))));
+      } catch (e) { return null; }
+    }
+
+    /** Restores a teammate's shared request state after the op is selected. */
+    function applyShared(state) {
+      if (state.u) byId('url-input').value = state.u;
+      if (state.b) {
+        var editor = byId('body-editor');
+        if (editor) {
+          bodyMode = 'raw';
+          var raw = document.querySelector('#panel-body input[value=raw]');
+          if (raw) raw.checked = true;
+          var wrap = byId('editor-wrap');
+          if (wrap) wrap.hidden = false;
+          editor.value = state.b;
+          editor.dispatchEvent(new Event('input'));
+          renderHeadersPanel();
+        }
+      }
+    }
+
+    byId('share-btn').addEventListener('click', function () {
+      if (!current) return;
+      var state = { u: byId('url-input').value };
+      var editor = byId('body-editor');
+      if (bodyMode === 'raw' && editor && editor.value.trim()) state.b = editor.value;
+      var link = location.origin + location.pathname + '#' + current.id + '!' + encodeShare(state);
+      copyText(link, byId('share-btn'));
+    });
+
+    /* ------------------------------------------------------------------ *
+     * Export as Postman Collection v2.1
+     * ------------------------------------------------------------------ */
+
+    function exportPostman() {
+      if (!spec) return;
+      var info = spec.info || {};
+      var collection = {
+        info: {
+          name: info.title || 'API',
+          description: info.description || '',
+          schema: 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
+        },
+        variable: [{ key: 'baseUrl', value: absolute(baseUrl() || '') }],
+        item: [],
+      };
+
+      Object.keys(groupsCache).sort().forEach(function (tag) {
+        var folder = { name: tag, item: [] };
+        groupsCache[tag].forEach(function (item) {
+          var body = bodyInfo(item.op);
+          var pmPath = item.path.replace(/\{([^}]+)\}/g, ':$1');
+          var request = {
+            method: item.method.toUpperCase(),
+            header: [],
+            url: {
+              raw: '{{baseUrl}}' + pmPath,
+              host: ['{{baseUrl}}'],
+              path: pmPath.split('/').filter(Boolean),
+            },
+            description: item.op.description || item.op.summary || '',
+          };
+
+          var params = item.op.parameters || [];
+          var query = params.filter(function (p) { return p.in === 'query'; });
+          var pathVars = params.filter(function (p) { return p.in === 'path'; });
+          if (query.length) {
+            request.url.query = query.map(function (p) {
+              return { key: p.name, value: '', description: p.description || '' };
+            });
+          }
+          if (pathVars.length) {
+            request.url.variable = pathVars.map(function (p) {
+              return { key: p.name, value: '', description: p.description || '' };
+            });
+          }
+          if (body.isMultipart) {
+            // No Content-Type header: Postman generates the boundary itself.
+            request.body = {
+              mode: 'formdata',
+              formdata: formFieldsOf(body.schema).map(function (f) {
+                return f.isFile
+                  ? { key: f.key || f.name, type: 'file', src: [] }
+                  : { key: f.name, type: 'text', value: '' };
+              }),
+            };
+          } else if (body.contentType) {
+            request.header.push({ key: 'Content-Type', value: body.contentType });
+            if (body.example !== null) {
+              request.body = {
+                mode: 'raw',
+                raw: JSON.stringify(body.example, null, 2),
+                options: { raw: { language: 'json' } },
+              };
+            }
+          }
+
+          folder.item.push({ name: item.op.summary || item.path, request: request });
+        });
+        collection.item.push(folder);
+      });
+
+      var blob = new Blob([JSON.stringify(collection, null, 2)], { type: 'application/json' });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = (info.title || 'api').replace(/[^a-zA-Z0-9-_]+/g, '-') + '.postman_collection.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    }
+
+    byId('export-postman').addEventListener('click', exportPostman);
+
+    /* ------------------------------------------------------------------ *
+     * WebSockets — gateway docs + live console (Socket.IO / raw WS)
+     * ------------------------------------------------------------------ */
+
+    var wsDoc = null;
+    var wsConn = null;
+
+    function wsUrlFor(gateway) {
+      var specBase = spec && spec.servers && spec.servers[0] && spec.servers[0].url;
+      var env = activeEnv();
+      var backend = (env && env.baseUrl) || specBase;
+      if (backend) {
+        return backend + (gateway.namespace || '');
+      }
+      var origin = location.origin;
+      if (gateway.port) {
+        origin = location.protocol + '//' + location.hostname + ':' + gateway.port;
+      }
+      return origin + (gateway.namespace || '');
+    }
+
+    var wsState = 'disconnected';
+    var wsPendingSend = false;
+
+    function setWsStatus(state) {
+      wsState = state;
+      var chip = byId('ws-status');
+      chip.textContent = state;
+      chip.className = 'chip ' + (state === 'connected' ? 'chip-ok' : state === 'error' ? 'chip-err' : '');
+      byId('ws-connect').textContent = state === 'connected' ? 'Disconnect' : 'Connect';
+      if (state === 'connected' && wsPendingSend) {
+        wsPendingSend = false;
+        wsDoSend();
+      }
+      if (state === 'error') wsPendingSend = false;
+    }
+
+    function wsLog(direction, name, data) {
+      var log = byId('ws-log');
+      var empty = log.querySelector('.resp-empty');
+      if (empty) empty.remove();
+
+      var arrow = direction === 'in' ? '▼' : direction === 'out' ? '▲' : '●';
+      var body = '';
+      if (data !== undefined && data !== null && data !== '') {
+        var text = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+        body = '<pre class="code ws-log-data">' + hljson(text) + '</pre>';
+      }
+      var row = el('<div class="ws-log-row">' +
+        '<span class="ws-dir ws-dir-' + direction + '">' + arrow + '</span>' +
+        '<span class="ws-log-name">' + esc(name) + '</span>' +
+        '<span class="ws-log-time dim">' + new Date().toLocaleTimeString() + '</span>' +
+        body +
+      '</div>');
+      log.insertBefore(row, log.firstChild);
+      while (log.children.length > 100) log.removeChild(log.lastChild);
+      var count = log.querySelectorAll('.ws-log-row').length;
+      byId('ws-meta').textContent = count + ' event' + (count === 1 ? '' : 's') + ' · live';
+      // Sends and connection changes are user actions — the log lives below
+      // the schema docs, so bring the new entry into view.
+      if (direction !== 'in') {
+        log.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function loadSocketIo(backendUrl, callback) {
+      if (window.io) return callback(window.io);
+      // Load the Socket.IO client from the backend URL so cross-origin docs
+      // servers can still connect without a local Socket.IO server.
+      // Only the origin matters: a namespaced URL like http://host:3000/orders
+      // must still fetch http://host:3000/socket.io/socket.io.js.
+      var origin = location.origin;
+      try { origin = new URL(backendUrl, location.href).origin; } catch (e) { /* keep docs origin */ }
+      var script = document.createElement('script');
+      script.src = origin + '/socket.io/socket.io.js';
+      script.onload = function () { callback(window.io || null); };
+      script.onerror = function () { callback(null); };
+      document.head.appendChild(script);
+    }
+
+    function wsDisconnect() {
+      if (!wsConn) return;
+      try {
+        if (wsConn.kind === 'socketio') wsConn.socket.disconnect();
+        else wsConn.socket.close();
+      } catch (e) { /* already closed */ }
+      wsConn = null;
+      setWsStatus('disconnected');
+    }
+
+    function wsConnect() {
+      var url = byId('ws-url').value;
+      var transport = byId('ws-transport').value;
+      setWsStatus('connecting…');
+
+      if (transport === 'ws') {
+        var wsUrl = url.replace(/^http/, 'ws');
+        var socket;
+        try {
+          socket = new WebSocket(wsUrl);
+        } catch (e) {
+          setWsStatus('error');
+          wsLog('sys', 'error', String(e));
+          return;
+        }
+        wsConn = { kind: 'ws', socket: socket };
+        socket.onopen = function () { setWsStatus('connected'); wsLog('sys', 'connected', wsUrl); };
+        socket.onclose = function () { if (wsConn && wsConn.socket === socket) { wsConn = null; } setWsStatus('disconnected'); };
+        socket.onerror = function () { setWsStatus('error'); wsLog('sys', 'error', 'WebSocket error — is the gateway using the ws adapter?'); };
+        socket.onmessage = function (event) {
+          var data = event.data;
+          try { data = JSON.parse(event.data); } catch (e) { /* keep raw */ }
+          wsLog('in', (data && data.event) || 'message', data);
+        };
+        return;
+      }
+
+      loadSocketIo(url, function (io) {
+        if (!io) {
+          setWsStatus('error');
+          wsLog('sys', 'error', 'Could not load /socket.io/socket.io.js from this server. Raw WebSocket may work instead.');
+          return;
+        }
+        var socket = io(url, { transports: ['websocket', 'polling'] });
+        wsConn = { kind: 'socketio', socket: socket };
+        socket.on('connect', function () { setWsStatus('connected'); wsLog('sys', 'connected', 'id: ' + socket.id); });
+        socket.on('disconnect', function (reason) { setWsStatus('disconnected'); wsLog('sys', 'disconnected', reason); });
+        socket.on('connect_error', function (err) { setWsStatus('error'); wsLog('sys', 'connect_error', String(err && err.message || err)); });
+        if (socket.onAny) {
+          socket.onAny(function (eventName) {
+            var args = [].slice.call(arguments, 1);
+            wsLog('in', eventName, args.length === 1 ? args[0] : args);
+          });
+        }
+      });
+    }
+
+    byId('ws-connect').addEventListener('click', function () {
+      if (wsConn) wsDisconnect();
+      else wsConnect();
+    });
+
+    function wsDoSend() {
+      if (!wsConn) return;
+      var name = byId('ws-event-name').value.trim();
+      if (!name) {
+        wsLog('sys', 'no event name', 'Type the event name to send — e.g. chat.send');
+        return;
+      }
+      var text = byId('ws-payload').value.trim();
+      var data = null;
+      if (text) {
+        try { data = JSON.parse(text); } catch (e) { data = text; }
+      }
+
+      if (wsConn.kind === 'socketio') {
+        wsConn.socket.emit(name, data, function (ack) { wsLog('in', name + ' · ack', ack); });
+      } else {
+        wsConn.socket.send(JSON.stringify({ event: name, data: data }));
+      }
+      wsLog('out', name, data);
+    }
+
+    byId('ws-send').addEventListener('click', function () {
+      if (wsState === 'connected' && wsConn) {
+        wsDoSend();
+        return;
+      }
+      // Not connected yet: connect first, then send — pressing Send cold
+      // used to do nothing at all.
+      wsPendingSend = true;
+      wsLog('sys', 'auto-connect', 'Not connected — connecting first, your event will be sent when the socket opens.');
+      if (!wsConn) wsConnect();
+    });
+
+    byId('ws-clear').addEventListener('click', function () {
+      byId('ws-log').innerHTML = '<div class="resp-empty">Connect and send an event to see live traffic here.</div>';
+    });
+
+    byId('ws-crumb-overview').addEventListener('click', showOverview);
+
+    /** Deep-link registry for WS / GraphQL views: hash → opener. */
+    var extraViews = {};
+
+    function showWsView(gateway, wsEvent, navEl) {
+      current = null;
+      try { history.replaceState(null, '', '#' + wsViewId(gateway, wsEvent)); } catch (e) { /* ignore */ }
+      byId('welcome').hidden = true;
+      byId('request-view').hidden = true;
+      byId('ws-view').hidden = false;
+      byId('gql-view').hidden = true;
+
+      byId('overview-link').classList.remove('active');
+      var active = document.querySelector('.nav-item.active');
+      if (active) active.classList.remove('active');
+      if (navEl) navEl.classList.add('active');
+
+      byId('ws-crumb-gateway').textContent = gateway.name;
+      byId('ws-crumb-event').textContent = wsEvent.event;
+      byId('ws-url').value = wsUrlFor(gateway);
+      byId('ws-event-name').value = wsEvent.event;
+      byId('ws-summary').textContent = wsEvent.summary || '';
+
+      var example = wsEvent.payload && Object.keys(wsEvent.payload).length
+        ? exampleOf(wsEvent.payload, 0) : null;
+      byId('ws-payload').value = example !== null ? JSON.stringify(example, null, 2) : '';
+
+      var doc = '';
+      if (wsEvent.description) doc += '<p class="dim">' + esc(wsEvent.description) + '</p>';
+      var payloadTree = wsEvent.payload ? schemaTree(wsEvent.payload, 0) : '';
+      if (payloadTree) doc += '<h4>Payload schema</h4><div class="schema">' + payloadTree + '</div>';
+      var responseTree = wsEvent.response ? schemaTree(wsEvent.response, 0) : '';
+      if (responseTree) doc += '<h4>Response schema</h4><div class="schema">' + responseTree + '</div>';
+      byId('ws-doc').innerHTML = doc;
+    }
+
+    function renderWsSidebar() {
+      var nav = byId('side-collections');
+      wsDoc.gateways.forEach(function (gateway) {
+        var group = el('<div class="group">' +
+          '<button type="button" class="group-head">' +
+            '<span class="chev">▸</span>' +
+            '<span class="group-name">🔌 ' + esc(gateway.name) + '</span>' +
+            '<span class="group-count">' + gateway.events.length + '</span>' +
+          '</button>' +
+          '<div class="group-items"></div>' +
+        '</div>');
+
+        group.querySelector('.group-head').addEventListener('click', function () {
+          group.classList.toggle('open');
+        });
+
+        var itemsEl = group.querySelector('.group-items');
+        gateway.events.forEach(function (wsEvent) {
+          var a = el('<button type="button" class="nav-item">' +
+            '<span class="method method-sm method-ws">WS</span>' +
+            '<span class="nav-text">' +
+              '<span class="nav-name">' + esc(wsEvent.summary || wsEvent.event) + '</span>' +
+              '<span class="nav-path">' + esc(wsEvent.event) + '</span>' +
+            '</span>' +
+          '</button>');
+          a.setAttribute('data-search', ('ws ' + wsEvent.event + ' ' + (wsEvent.summary || '') + ' ' + gateway.name).toLowerCase());
+          a.addEventListener('click', function () { showWsView(gateway, wsEvent, a); });
+          extraViews[wsViewId(gateway, wsEvent)] = function () { group.classList.add('open'); showWsView(gateway, wsEvent, a); };
+          itemsEl.appendChild(a);
+        });
+
+        nav.appendChild(group);
+      });
+    }
+
+    function wsViewId(gateway, wsEvent) {
+      return 'ws-' + (gateway.name + '-' + wsEvent.event).replace(/[^a-zA-Z0-9]/g, '-');
+    }
+
+    /* ------------------------------------------------------------------ *
+     * GraphQL — resolver docs + console
+     * ------------------------------------------------------------------ */
+
+    var gqlDoc = null;
+
+    byId('gql-crumb-overview').addEventListener('click', showOverview);
+
+    function gqlViewId(operation) {
+      return 'gql-' + (operation.kind + '-' + operation.name).replace(/[^a-zA-Z0-9]/g, '-');
+    }
+
+    function showGqlView(resolver, operation, navEl) {
+      current = null;
+      try { history.replaceState(null, '', '#' + gqlViewId(operation)); } catch (e) { /* ignore */ }
+      byId('welcome').hidden = true;
+      byId('request-view').hidden = true;
+      byId('ws-view').hidden = true;
+      byId('gql-view').hidden = false;
+
+      byId('overview-link').classList.remove('active');
+      var active = document.querySelector('.nav-item.active');
+      if (active) active.classList.remove('active');
+      if (navEl) navEl.classList.add('active');
+
+      byId('gql-crumb-resolver').textContent = resolver.name;
+      byId('gql-crumb-op').textContent = operation.name;
+      byId('gql-kind').textContent = operation.kind.toUpperCase();
+      var env = activeEnv();
+
+      var specBase = spec && spec.servers && spec.servers[0] && spec.servers[0].url;
+
+      var base = (env && env.baseUrl) || specBase || location.origin;
+
+      byId('gql-url').value = base.replace(/\/+$/, '') + '/graphql';
+
+      byId('gql-summary').textContent = operation.summary || '';
+      byId('gql-query').value = operation.sample || '';
+      // Pre-fill variables with realistic values derived from the argument
+      // schemas — the operation is runnable without typing anything.
+      var varsExample = {};
+      (operation.args || []).forEach(function (arg) {
+        varsExample[arg.name] = exampleOf(arg.schema || {}, 0, arg.name);
+      });
+      byId('gql-variables').value = Object.keys(varsExample).length
+        ? JSON.stringify(varsExample, null, 2) : '';
+      byId('gql-resp').innerHTML = '<div class="resp-empty">Hit <b>Run</b> to execute the operation against your GraphQL endpoint.</div>';
+      byId('gql-meta').textContent = '';
+
+      var doc = '';
+      if (operation.deprecated) doc += '<p><span class="chip chip-err">deprecated</span></p>';
+      if (operation.description) doc += '<p class="dim">' + esc(operation.description) + '</p>';
+      var argRows = (operation.args || []).map(function (arg) {
+        var tree = arg.schema && Object.keys(arg.schema).length ? schemaTree(arg.schema, 0) : '';
+        return '<h4>Argument: <code>' + esc(arg.name) + '</code>' + (arg.required ? ' <span class="req-star">*</span>' : '') + '</h4>' +
+          (tree ? '<div class="schema">' + tree + '</div>' : '');
+      }).join('');
+      doc += argRows;
+      var responseTree = operation.response && Object.keys(operation.response).length
+        ? schemaTree(operation.response, 0) : '';
+      if (responseTree) doc += '<h4>Response schema</h4><div class="schema">' + responseTree + '</div>';
+      byId('gql-doc').innerHTML = doc;
+    }
+
+    byId('gql-run').addEventListener('click', function () {
+      var query = byId('gql-query').value;
+      var variables = null;
+      var varsText = byId('gql-variables').value.trim();
+      if (varsText) {
+        try {
+          variables = JSON.parse(varsText);
+        } catch (e) {
+          byId('gql-resp').innerHTML = '<div class="resp-empty">Variables is not valid JSON — ' + esc(String(e.message)) + '</div>';
+          return;
+        }
+      }
+
+      var started = Date.now();
+      var runBtn = byId('gql-run');
+      runBtn.disabled = true;
+      runBtn.textContent = '…';
+      // Immediate, visible feedback: the response panel lives below the
+      // schema docs, so bring it into view instead of updating off-screen.
+      byId('gql-resp').innerHTML = '<div class="resp-empty">Running…</div>';
+      byId('gql-resp').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      fetch(viaProxy(byId('gql-url').value), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(variables ? { query: query, variables: variables } : { query: query }),
+      }).then(function (res) {
+        return res.text().then(function (text) { return { res: res, text: text }; });
+      }).then(function (r) {
+        var ms = Date.now() - started;
+        var cls = r.res.ok ? 'status-2xx' : 'status-5xx';
+        byId('gql-meta').innerHTML = '<span class="status ' + cls + '">' + r.res.status + '</span> · ' + ms + ' ms';
+        var pretty = r.text;
+        try { pretty = JSON.stringify(JSON.parse(r.text), null, 2); } catch (e) { /* keep raw */ }
+        byId('gql-resp').innerHTML = '<pre class="code">' + hljson(pretty) + '</pre>';
+        if (r.res.ok && pretty.indexOf('"errors"') === -1) captureToken(r.text);
+        byId('gql-resp').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }).catch(function (err) {
+        byId('gql-resp').innerHTML = '<div class="resp-empty">Request failed — ' + esc(String(err)) + '. Is a GraphQL endpoint mounted at this URL?</div>';
+      }).then(function () {
+        runBtn.disabled = false;
+        runBtn.textContent = 'Run';
+      });
+    });
+
+    function renderGqlSidebar() {
+      var nav = byId('side-collections');
+      gqlDoc.resolvers.forEach(function (resolver) {
+        var group = el('<div class="group">' +
+          '<button type="button" class="group-head">' +
+            '<span class="chev">▸</span>' +
+            '<span class="group-name">◈ ' + esc(resolver.name) + '</span>' +
+            '<span class="group-count">' + resolver.operations.length + '</span>' +
+          '</button>' +
+          '<div class="group-items"></div>' +
+        '</div>');
+
+        group.querySelector('.group-head').addEventListener('click', function () {
+          group.classList.toggle('open');
+        });
+
+        var itemsEl = group.querySelector('.group-items');
+        resolver.operations.forEach(function (operation) {
+          var badge = operation.kind === 'mutation' ? 'MUT' : operation.kind === 'subscription' ? 'SUB' : 'QRY';
+          var a = el('<button type="button" class="nav-item">' +
+            '<span class="method method-sm method-gql">' + badge + '</span>' +
+            '<span class="nav-text">' +
+              '<span class="nav-name">' + esc(operation.summary || operation.name) + '</span>' +
+              '<span class="nav-path">' + esc(operation.name) + '</span>' +
+            '</span>' +
+          '</button>');
+          a.setAttribute('data-search', ('graphql ' + operation.kind + ' ' + operation.name + ' ' + (operation.summary || '') + ' ' + resolver.name).toLowerCase());
+          a.addEventListener('click', function () { showGqlView(resolver, operation, a); });
+          extraViews[gqlViewId(operation)] = function () { group.classList.add('open'); showGqlView(resolver, operation, a); };
+          itemsEl.appendChild(a);
+        });
+
+        nav.appendChild(group);
+      });
+    }
+
+    /* ------------------------------------------------------------------ *
+     * Search
+     * ------------------------------------------------------------------ */
+
+    byId('search').addEventListener('input', function (event) {
+      var q = event.target.value.toLowerCase().trim();
+      document.querySelectorAll('.group').forEach(function (group) {
+        var visible = 0;
+        group.querySelectorAll('.nav-item').forEach(function (item) {
+          var match = !q || item.getAttribute('data-search').indexOf(q) !== -1;
+          item.style.display = match ? '' : 'none';
+          if (match) visible++;
+        });
+        group.style.display = visible ? '' : 'none';
+        if (q && visible) group.classList.add('open');
+      });
+    });
+
+    /* ------------------------------------------------------------------ *
+     * Boot
+     * ------------------------------------------------------------------ */
+
+    renderHistory();
+
+    // Static exports inline the documents as JSON script tags so the page
+    // works from a file:// URL or any static host with no server at all.
+    function loadDoc(url, inlineId) {
+      var inline = document.getElementById(inlineId);
+      if (inline) {
+        try { return Promise.resolve(JSON.parse(inline.textContent || 'null')); } catch (e) { return Promise.resolve(null); }
+      }
+      return fetch(url).then(function (res) { return res.ok ? res.json() : null; });
+    }
+
+    loadDoc(SPEC_URL, 'scramble-spec').then(function (doc) {
+      if (!doc) throw new Error('spec unavailable');
+      return doc;
+    }).then(function (doc) {
+      spec = doc;
+      var info = spec.info || {};
+      if (info.title) {
+        byId('api-title').textContent = info.title;
+        byId('welcome-title').textContent = info.title;
+        document.title = info.title;
+      }
+      if (info.version) {
+        var chip = byId('api-version');
+        chip.textContent = 'v' + info.version;
+        chip.hidden = false;
+      }
+      if (info.description) byId('welcome-desc').textContent = info.description;
+
+      var groups = collectOperations();
+      renderOverview(groups);
+      renderSidebar(groups);
+
+      // Deep links: #op-… selects an operation, #op-…!<state> also restores a
+      // shared request. Applied on load and whenever the hash changes, so
+      // pasting a link into an already-open tab (or using back/forward) works.
+      function applyHash() {
+        var hash = location.hash.slice(1);
+        if (!hash) { if (current) showOverview(); return; }
+        var bang = hash.indexOf('!');
+        var opKey = bang === -1 ? hash : hash.slice(0, bang);
+        var sharedState = bang === -1 ? null : decodeShare(hash.slice(bang + 1));
+        var fromHash = opKey && opsById[opKey];
+        if (fromHash) {
+          if (current && current.id === fromHash.id && !sharedState) return;
+          selectOperation(fromHash);
+          if (sharedState) applyShared(sharedState);
+          return;
+        }
+        // WebSocket / GraphQL consoles register their own deep links once loaded.
+        if (extraViews[opKey]) extraViews[opKey]();
+      }
+      applyHash();
+      window.addEventListener('hashchange', applyHash);
+
+      // WebSocket gateway docs are optional — hide the section when absent.
+      loadDoc(SPEC_URL.replace('-json', '-ws-json'), 'scramble-ws').then(function (doc) {
+        if (doc && doc.gateways && doc.gateways.length) {
+          wsDoc = doc;
+          renderWsSidebar();
+          if (/^#ws-/.test(location.hash)) applyHash();
+        }
+      }).catch(function () { /* endpoint not available */ });
+
+      // Same for GraphQL resolver docs.
+      loadDoc(SPEC_URL.replace('-json', '-graphql-json'), 'scramble-graphql').then(function (doc) {
+        if (doc && doc.resolvers && doc.resolvers.length) {
+          gqlDoc = doc;
+          renderGqlSidebar();
+          if (/^#gql-/.test(location.hash)) applyHash();
+        }
+      }).catch(function () { /* endpoint not available */ });
+    }).catch(function (err) {
+      byId('welcome-desc').textContent = 'Failed to load ' + SPEC_URL + ' — ' + String(err);
+    });
+  })();
+  </script>
+</body>
+</html>
