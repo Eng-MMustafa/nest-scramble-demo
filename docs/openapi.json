@@ -1147,11 +1147,11 @@
                   "properties": {
                     "access_token": {
                       "type": "string",
-                      "example": "sample value"
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIn0.sample-signature"
                     },
                     "token_type": {
                       "type": "string",
-                      "example": "sample value"
+                      "example": "bearer"
                     }
                   },
                   "required": [
@@ -1159,8 +1159,8 @@
                     "token_type"
                   ],
                   "example": {
-                    "access_token": "sample value",
-                    "token_type": "sample value"
+                    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIn0.sample-signature",
+                    "token_type": "bearer"
                   }
                 }
               }
